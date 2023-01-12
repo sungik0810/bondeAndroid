@@ -1,7 +1,8 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
+import HomeStackNavigation from './HomeStackNavigation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-const HomeStackNavigation = () => {
+const AppStackNavigation = () => {
   const Tab = createBottomTabNavigator();
   return (
     <Tab.Navigator
@@ -56,4 +57,4 @@ const HomeStackNavigation = () => {
   );
 };
 
-export default HomeStackNavigation;
+export default AppStackNavigation;
