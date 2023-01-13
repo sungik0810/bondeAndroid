@@ -12,6 +12,7 @@ import LoadingScreen from './Screens/LoadingScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import AppStackNavigation from './Navigations/AppStackNavigation';
+import HomeScreen from './Screens/HomeScreen';
 const BASE_URL = 'http://192.168.0.12:3000';
 const App = () => {
   // StatusBar dark mode
@@ -46,7 +47,6 @@ const App = () => {
           setYoutubeVideoData,
           setSearchData,
         }}>
-        {' '}
         <SafeAreaView style={backgroundStyle}>
           <StatusBar
             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
@@ -64,21 +64,8 @@ const App = () => {
             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
             backgroundColor={backgroundStyle.backgroundColor}
           />
-          <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName="App"
-              screenOptions={{
-                tabBarShowLabel: false,
-                tabBarActiveTintColor: '#fb8c00',
-              }}>
-              <Stack.Screen
-                name="AppStack"
-                component={AppStackNavigation}
-                options={{headerShown: false}}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-          {/* <HomeScreen /> */}
+          
+          <HomeScreen />
         </SafeAreaView>
       </DataContext.Provider>
     </BASE_URL_Context.Provider>
