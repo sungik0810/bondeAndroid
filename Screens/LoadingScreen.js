@@ -11,7 +11,6 @@ const LoadingScreen = () => {
   const {BASE_URL} = useContext(BASE_URL_Context);
   // network connet checking && version checking && loading
   const netInfo = useNetInfo();
-  const [fixedServerData, setFixedserverData] = useState([]);
   const [newVersion, setNewVersion] = useState('');
   const [currentVersion, setCurrentVersion] = useState('');
 
@@ -76,7 +75,6 @@ const LoadingScreen = () => {
       const DataToJsonNewServerVersion = JSON.stringify(newServerVersion);
       await AsyncStorage.setItem('version', DataToJsonNewServerVersion);
 
-      setFixedserverData(serverData);
       const DataToJsonServerData = JSON.stringify(serverData);
       await AsyncStorage.setItem('localStorageData', DataToJsonServerData);
       return;
@@ -174,6 +172,7 @@ const LoadingScreen = () => {
   return (
     <View>
       <Text>Loading...</Text>
+      <Text>netInfo.isConnected : {netInfo.isConnected}</Text>
     </View>
   );
 };

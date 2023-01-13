@@ -14,6 +14,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import AppStackNavigation from './Navigations/AppStackNavigation';
 import HomeScreen from './Screens/HomeScreen';
 const BASE_URL = 'http://192.168.0.12:3000';
+// navigation
+const Stack = createNativeStackNavigator();
 const App = () => {
   // StatusBar dark mode
   const isDarkMode = useColorScheme() === 'dark';
@@ -34,9 +36,6 @@ const App = () => {
       setIsAppLoading(false);
     }
   }, [storeData, youtubeVideoData, searchData]);
-
-  // navigation
-  const Stack = createNativeStackNavigator();
 
   return isAppLoading ? (
     <BASE_URL_Context.Provider value={{BASE_URL}}>
@@ -59,14 +58,25 @@ const App = () => {
   ) : (
     <BASE_URL_Context.Provider value={BASE_URL}>
       <DataContext.Provider value={storeData}>
-        <SafeAreaView style={backgroundStyle}>
-          <StatusBar
-            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-            backgroundColor={backgroundStyle.backgroundColor}
-          />
-          
-          <HomeScreen />
-        </SafeAreaView>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="App"
+            screenOptions={{
+              tabBarShowLabel: false,
+              tabBarActiveTintColor: '#fb8c00',
+            }}>
+            <Stack.Screen
+              name="AppStackNavigation"
+              component={AppStackNavigation}
+              options={{headerShown: false}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+        {/* <HomeScreen /> */}
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
       </DataContext.Provider>
     </BASE_URL_Context.Provider>
   );

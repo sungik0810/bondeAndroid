@@ -1,58 +1,26 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import HomeScreen from '../Screens/HomeScreen';
 const HomeStackNavigation = () => {
-  const Tab = createBottomTabNavigator();
+  const Stack = createNativeStackNavigator();
   return (
-    <Tab.Navigator
-      initialRouteName="Route"
-      screenOptions={{
-        tabBarActiveTintColor: '#fb8c00',
-        tabBarShowLabel: false,
-      }}>
-      <Tab.Screen
-        name="HomeStackNavigation"
-        component={HomeStackNavigation}
-        options={{
-          title: '홈',
-          tabBarIcon: ({color, size}) => (
-            <MaterialIcons name="home" color={color} size={size} />
-          ),
-          headerShown: false,
-        }}
-      />
-      {/* <Tab.Screen
-        name="YoutubeStackNavigation"
-        component={YoutubeStackNavigation}
-        options={{
-          title: 'YOUTUBE',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="notifications" color={color} size={size} />
-          ),
-          headerShown: false,
-        }}
-      /> */}
-      {/* <Tab.Screen
-        name="Search"
-        component={SearchScreen}
-        options={{
-          title: '검색',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="search" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Message"
-        component={MessageScreen}
-        options={{
-          title: '메시지',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="message" color={color} size={size} />
-          ),
-        }}
-      /> */}
-    </Tab.Navigator>
+    <NavigationContainer independent={true}>
+      <Stack.Navigator
+        initialRouteName="HomeStackNavigation"
+        screenOptions={{
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: '#fb8c00',
+        }}>
+        <Stack.Screen
+          name="HomeScreen"
+          component={HomeScreen}
+          // * 이 설정을 추가하지 않으면 헤더가 두개가 보이는 현상이 나타난다.
+          // * 하단 탭 내비게이터를 스택 내비게이터 내부에서 사용하게 될 때 이 설정을 꼭 해주어야 한다.
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
