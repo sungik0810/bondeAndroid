@@ -1,9 +1,11 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, TextInput, View} from 'react-native';
+import LoginForm from '../Components/LoginForm';
 const LoginScreen = () => {
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+    <View style={{flex: 1}}>
       <Text>Login</Text>
+      <LoginForm/>
     </View>
   );
 };

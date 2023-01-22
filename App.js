@@ -12,11 +12,16 @@ import LoadingScreen from './Screens/LoadingScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import AppStackNavigation from './Navigations/AppStackNavigation';
+import { StyleContext } from './ContextAPI/StyleContext';
 import HomeScreen from './Screens/HomeScreen';
-const BASE_URL = 'http://192.168.0.12:3000';
-// navigation
-const Stack = createNativeStackNavigator();
+import ChannelScreen from './Screens/ChannelScreen';
+import MypageScreen from './Screens/MypageScreen';
+import LocalSearchScreen from './Screens/LocalSearchScreen';
+import FoodSearchScreen from './Screens/FoodSearchScreen';
 const App = () => {
+  const BASE_URL = 'http://192.168.0.12:3000';
+  // navigation
+  const Stack = createNativeStackNavigator();
   // StatusBar dark mode
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
@@ -27,15 +32,17 @@ const App = () => {
   const [storeData, setStoreData] = useState(null);
   const [youtubeVideoData, setYoutubeVideoData] = useState(null);
   const [searchData, setSearchData] = useState(null);
+  const [windowWidth,setWindowWidth] = useState(null);
   useEffect(() => {
     if (
       storeData !== null &&
       youtubeVideoData !== null &&
-      searchData !== null
+      searchData !== null &&
+      windowWidth !== null
     ) {
       setIsAppLoading(false);
     }
-  }, [storeData, youtubeVideoData, searchData]);
+  }, [storeData, youtubeVideoData, searchData,windowWidth ]);
 
   return isAppLoading ? (
     <BASE_URL_Context.Provider value={{BASE_URL}}>
@@ -45,6 +52,7 @@ const App = () => {
           setStoreData,
           setYoutubeVideoData,
           setSearchData,
+          setWindowWidth
         }}>
         <SafeAreaView style={backgroundStyle}>
           <StatusBar
@@ -57,19 +65,50 @@ const App = () => {
     </BASE_URL_Context.Provider>
   ) : (
     <BASE_URL_Context.Provider value={BASE_URL}>
+      <StyleContext.Provider value={windowWidth}>
       <DataContext.Provider value={storeData}>
         <NavigationContainer>
           <Stack.Navigator
             initialRouteName="App"
             screenOptions={{
               tabBarShowLabel: false,
-              tabBarActiveTintColor: '#fb8c00',
+              tabBarActiveTintColor: '#FF8A00',
+              
+                headerStyle: {
+                  backgroundColor: '#FF8A00',
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              
             }}>
             <Stack.Screen
-              name="AppStackNavigation"
-              component={AppStackNavigation}
-              options={{headerShown: false}}
+              name="Home"
+              component={HomeScreen}
+              options={{headerShown: true}}
             />
+            <Stack.Screen
+              name="Channel"
+              component={ChannelScreen}
+              options={{headerShown: true}}
+            />
+            <Stack.Screen
+              name="Food"
+              component={FoodSearchScreen}
+              options={{headerShown: true}}
+            />
+            <Stack.Screen
+              name="Local"
+              component={LocalSearchScreen}
+              options={{headerShown: true}}
+            />
+            <Stack.Screen
+              name="Mypage"
+              component={MypageScreen}
+              options={{headerShown: true}}
+            />
+
           </Stack.Navigator>
         </NavigationContainer>
         {/* <HomeScreen /> */}
@@ -78,6 +117,7 @@ const App = () => {
           backgroundColor={backgroundStyle.backgroundColor}
         />
       </DataContext.Provider>
+      </StyleContext.Provider>
     </BASE_URL_Context.Provider>
   );
 };

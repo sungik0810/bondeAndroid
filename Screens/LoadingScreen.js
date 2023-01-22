@@ -1,13 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import {Alert, Dimensions, Text, View} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNetInfo} from '@react-native-community/netinfo';
 import {DataContext} from '../ContextAPI/DataContext';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
 const LoadingScreen = () => {
-  const {setStoreData, setYoutubeVideoData, setSearchData} =
-    useContext(DataContext);
+  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth} =
+  useContext(DataContext);
   const {BASE_URL} = useContext(BASE_URL_Context);
   // network connet checking && version checking && loading
   const netInfo = useNetInfo();
@@ -20,33 +20,30 @@ const LoadingScreen = () => {
       const serverData = serverDataAxios.data;
       const storeServerData = await serverData.map(item => {
         return {
-          storeName: item.storeName,
-          storeAddress: item.storeAddress,
-          storeOpenTime: item.storeOpenTime,
-          storeBreakTime: item.storeBreakTime,
-          storeLastOrderTime: item.storeLastOrderTime,
-          storeClosed: item.storeClosed,
-          storeContact: item.storeContact,
-          storeSns: item.storeSns,
+          name: item.name,
+          address: item.address,
+          openTime: item.openTime,
+          breakTime: item.breakTime,
+          lastOrderTime: item.lastOrderTime,
+          closed: item.closed,
+          contact: item.contact,
         };
       });
       const youtubeVideoServerData = await serverData.map(item => {
         return {
-          youtubeChannelName: item.youtubeChannelName,
-          youtubeThumbnail: item.youtubeThumbnail,
-          youtubeLink: item.youtubeLink,
-          youtubeVideoTitle: item.youtubeVideoTitle,
-          youtubeOnAirDate: item.youtubeOnAirDate,
+          channelName: item.channelName,
+          thumbnail: item.thumbnail,
+          link: item.link,
+          title: item.title,
+          onAir: item.onAir,
         };
       });
       const searchServerData = await serverData.map(item => {
         return {
-          storeListScreenListing: item.storeListScreenListing,
-          storeLocationDo: item.storeLocationDo,
-          storeLocationSiGunGu: item.storeLocationSiGunGu,
-          storeLocationDong: item.storeLocationDong,
-          storeMenuFirst: item.storeMenuFirst,
-          storeMenuSecond: item.storeMenuSecond,
+          listing: item.listing,
+          state: item.state,
+          country: item.country,
+          sectors: item.sectors,
         };
       });
       setStoreData(storeServerData);
@@ -163,6 +160,8 @@ const LoadingScreen = () => {
     if (netInfo.isConnected != null) {
       const t0 = performance.now();
       appVersionChecker();
+      const windowWidth = Dimensions.get('window').width;
+      setWindowWidth(windowWidth)
       const t1 = performance.now();
       console.log('Time taken:', (t1 - t0).toFixed(4), 'ms');
       return;

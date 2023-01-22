@@ -1,64 +1,66 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React from 'react';
-import HomeStackNavigation from './HomeStackNavigation';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import ChannelStackNavigation from './ChannelStackNavigation';
-import SearchStackNavigation from './SearchStackNavigation';
-import MypageStackNavigation from './MypageStackNavigation';
-const Tab = createBottomTabNavigator();
+import React, { useContext } from 'react';
+import { Dimensions, ScrollView, Text, TextInput, View } from 'react-native';
+import { StyleContext } from '../ContextAPI/StyleContext';
+
 const AppStackNavigation = () => {
+  const windowWidth = useContext(StyleContext)
   return (
-    <Tab.Navigator
-      initialRouteName="Route"
-      screenOptions={{
-        tabBarActiveTintColor: '#fb8c00',
-        // tabBarShowLabel: false,
-      }}>
-      <Tab.Screen
-        name="HomeStackNavigation"
-        component={HomeStackNavigation}
-        options={{
-          title: 'HOME',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="home" color={color} size={size} />
-          ),
-          // headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="ChannelStackNavigation"
-        component={ChannelStackNavigation}
-        options={{
-          title: '채널',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="home" color={color} size={size} />
-          ),
-          // headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="SearchStackNavigation"
-        component={SearchStackNavigation}
-        options={{
-          title: '검색',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="search" color={color} size={size} />
-          ),
-          // headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="MypageStackNavigation"
-        component={MypageStackNavigation}
-        options={{
-          title: '나의 정보',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="notifications" color={color} size={size} />
-          ),
-          // headerShown: false,
-        }}
-      />
-    </Tab.Navigator>
+    <ScrollView style={{}}>
+      {/* search Bar */}
+      <View style={{width:"100%",backgroundColor:"#FF8A00",borderBottomLeftRadius:8,borderBottomRightRadius:8,marginBottom:8}}>
+        <View style={{marginLeft:16,marginRight:16,marginBottom:8}}>
+        <TextInput 
+        placeholder='시/군/구 or 음식점'
+        style={{backgroundColor:"white",fontSize:15,height:"auto",paddingBottom:8,paddingTop:8,color:"black"}}/>
+        </View>
+      </View>
+
+    {/* banner Bar */}
+    <View style={{width:"100%",backgroundColor:"gray",marginBottom:8}}>
+      <View style={{marginLeft:16,marginRight:16,backgroundColor:"#FF8A00",borderRadius:8,aspectRatio:16/5}}>
+
+      </View>
+    </View>
+
+    {/* FullSizeButton */}
+    <View style={{width:"100%",backgroundColor:"gray",marginBottom:8}}>
+      <View style={{marginLeft:16,marginRight:16,backgroundColor:"#FF8A00",borderRadius:8,aspectRatio:2/1}}></View>
+    </View>
+
+    {/* HalfSizeButton */}
+    <View style={{width:"100%",backgroundColor:"gray",marginBottom:8}}>
+      <View style={{flexDirection:"row",marginLeft:16,marginRight:16,justifyContent:"space-between"}}>
+
+      <View style={{backgroundColor:"#FF8A00",borderRadius:8,aspectRatio:1/1,width:windowWidth/2-24}}></View>
+      <View style={{backgroundColor:"#FF8A00",borderRadius:8,aspectRatio:1/1,width:windowWidth/2-24}}></View>
+      </View>
+    </View>
+
+    {/* new Store */}
+    <View style={{backgroundColor:"gray",marginBottom:8}}>
+    <Text>새로운 가게</Text>
+    <ScrollView horizontal={true}>
+      <View style={{flexDirection:"row",marginLeft:16}}>
+      <View style={{backgroundColor:"yellow",marginRight:16}}>
+        <View style={{backgroundColor:"#FF8A00",aspectRatio:1,width:Math.round(windowWidth/3),marginRight:8,borderRadius:8,marginBottom:8}}>
+          
+        </View>
+        <Text>gg</Text>
+        <View style={{flexDirection:"row"}}>
+
+        {/* youtube Icon */}
+        <View style={{aspectRatio:1,width:24,borderRadius:100,backgroundColor:"red",marginRight:8}}></View>
+        {/* sectors Icon */}
+        <View style={{aspectRatio:1,width:24,borderRadius:100,backgroundColor:"red",marginRight:8}}></View>
+        {/* location Icon */}
+        <View style={{aspectRatio:1,width:24,borderRadius:100,backgroundColor:"red",marginRight:8}}></View>
+        </View>
+      </View>
+      </View>
+    </ScrollView>
+    </View>
+
+    </ScrollView>
   );
 };
 
