@@ -11,13 +11,13 @@ import {DataContext} from './ContextAPI/DataContext';
 import LoadingScreen from './Screens/LoadingScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import AppStackNavigation from './Navigations/AppStackNavigation';
 import { StyleContext } from './ContextAPI/StyleContext';
 import HomeScreen from './Screens/HomeScreen';
-import ChannelScreen from './Screens/ChannelScreen';
 import MypageScreen from './Screens/MypageScreen';
-import LocalSearchScreen from './Screens/LocalSearchScreen';
-import FoodSearchScreen from './Screens/FoodSearchScreen';
+import LocalSearchScreen from './Screens/Search/LocalSearchScreen';
+import FoodSearchScreen from './Screens/Search/FoodSearchScreen';
+import ChannelSearchScreen from './Screens/Search/ChannelSearchScreen';
+import StoreListScreen from './Screens/StoreListScreen';
 const App = () => {
   const BASE_URL = 'http://192.168.0.12:3000';
   // navigation
@@ -33,6 +33,7 @@ const App = () => {
   const [youtubeVideoData, setYoutubeVideoData] = useState(null);
   const [searchData, setSearchData] = useState(null);
   const [windowWidth,setWindowWidth] = useState(null);
+  const [localData,setLocalData]=useState([])
   useEffect(() => {
     if (
       storeData !== null &&
@@ -43,7 +44,7 @@ const App = () => {
       setIsAppLoading(false);
     }
   }, [storeData, youtubeVideoData, searchData,windowWidth ]);
-
+  
   return isAppLoading ? (
     <BASE_URL_Context.Provider value={{BASE_URL}}>
       <DataContext.Provider
@@ -52,6 +53,7 @@ const App = () => {
           setStoreData,
           setYoutubeVideoData,
           setSearchData,
+          setLocalData,
           setWindowWidth
         }}>
         <SafeAreaView style={backgroundStyle}>
@@ -66,7 +68,7 @@ const App = () => {
   ) : (
     <BASE_URL_Context.Provider value={BASE_URL}>
       <StyleContext.Provider value={windowWidth}>
-      <DataContext.Provider value={storeData}>
+      <DataContext.Provider value={{storeData, youtubeVideoData, searchData}}>
         <NavigationContainer>
           <Stack.Navigator
             initialRouteName="App"
@@ -90,7 +92,7 @@ const App = () => {
             />
             <Stack.Screen
               name="Channel"
-              component={ChannelScreen}
+              component={ChannelSearchScreen}
               options={{headerShown: true}}
             />
             <Stack.Screen
@@ -108,6 +110,16 @@ const App = () => {
               component={MypageScreen}
               options={{headerShown: true}}
             />
+            
+            {localData.map((country)=>{
+              return(<Stack.Screen
+                key={`country-${country[0]}`}
+                name={`country-${country[0]}`}
+                component={StoreListScreen}
+                options={{headerShown: true}}
+              />)
+            })}
+            
 
           </Stack.Navigator>
         </NavigationContainer>

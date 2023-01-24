@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import {FlatList, View} from 'react-native';
-import FontStyle from '../Components/FontStyle';
-import IconStyle from '../Components/IconStyle';
-import { StyleContext } from '../ContextAPI/StyleContext';
-import IconImage from '../Datas/Icons';
-const ChannelScreen = () => {
+import FontStyle from '../../Components/FontStyle';
+import IconStyle from '../../Components/IconStyle';
+import { StyleContext } from '../../ContextAPI/StyleContext';
+import IconImage from '../../Datas/Icons';
+const ChannelSearchScreen = () => {
   const windowWidth = useContext(StyleContext)
   const DATA =[{title:1},{title:2},{title:3},{title:4},{title:5},{title:6},{title:7},{title:8},]
   const Item = ({title,width}) => (
@@ -35,4 +35,4 @@ const ChannelScreen = () => {
   );
 };
 
-export default ChannelScreen;
+export default ChannelSearchScreen;

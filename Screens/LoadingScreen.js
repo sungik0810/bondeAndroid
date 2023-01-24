@@ -5,8 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNetInfo} from '@react-native-community/netinfo';
 import {DataContext} from '../ContextAPI/DataContext';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
+import { locals } from '../Datas/locals';
 const LoadingScreen = () => {
-  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth} =
+  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth,setLocalData} =
   useContext(DataContext);
   const {BASE_URL} = useContext(BASE_URL_Context);
   // network connet checking && version checking && loading
@@ -20,13 +21,18 @@ const LoadingScreen = () => {
       const serverData = serverDataAxios.data;
       const storeServerData = await serverData.map(item => {
         return {
+          channelName: item.channelName,
+          country: item.country,
           name: item.name,
+          // rate
+          // logo
           address: item.address,
           openTime: item.openTime,
           breakTime: item.breakTime,
           lastOrderTime: item.lastOrderTime,
           closed: item.closed,
           contact: item.contact,
+          
         };
       });
       const youtubeVideoServerData = await serverData.map(item => {
@@ -168,6 +174,15 @@ const LoadingScreen = () => {
     }
   }, [netInfo.isConnected]);
 
+  useEffect(()=>{
+    const countryNumbers = []
+    Object.entries(locals).map((state)=>{
+      state[1].countryAll.map((country)=>{
+        countryNumbers.push([country.countryNum,country.countryKr,country.countryEn])
+      })
+    })
+    setLocalData(countryNumbers)
+  },[])
   return (
     <View>
       <Text>Loading...</Text>
