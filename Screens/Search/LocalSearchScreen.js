@@ -10,22 +10,9 @@ import { locals } from '../../Datas/locals';
 const LocalSearchScreen = ({navigation}) => {
   const windowWidth = useContext(StyleContext)
   const [localSelector,setLocalSelector] = useState("")
-  const [countryNumbers,setCountryNumbers] = useState([])
-  const [countryCount,setCountryCount] = useState({})
-  const {storeData,youtubeVideoData,searchData} = useContext(DataContext)
-  useEffect(()=>{
-    const countryCounter = {}
-    const countryFilter = storeData.filter((store)=>{
-      countryCounter[store.country] = 0
-      return store.country !== null
-    })
-    const countryNum = countryFilter.map((store)=>{
-      countryCounter[store.country] = countryCounter[store.country] + 1
-      return store.country
-    })
-    setCountryNumbers(countryNum)
-    setCountryCount(countryCounter)
-  },[])
+
+  const {storeData,youtubeVideoData,searchData,countryNumbers,countryCount} = useContext(DataContext)
+
   return (
     <ScrollView style={{}}>
       <FontStyle text="지역으로 찾기" size="xLarge" fontWeight='900' marginLeft={16} marginTop={20} marginBottom={20}/>
@@ -57,7 +44,7 @@ const LocalSearchScreen = ({navigation}) => {
               key={countryName.countryNum}
               onPress={()=>{
                 console.log("click")
-                navigation.navigate(`country-${countryName.countryNum}`,{countryNum:countryName.countryNum})
+                navigation.navigate(`country-${countryName.countryNum}`,{countryNum:countryName.countryNum,type:"local"})
               }}>
                 <View style={{marginLeft:8}}>
               <FontStyle text={countryName.countryKr} size="medium" marginRight={4}/>

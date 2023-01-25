@@ -18,6 +18,7 @@ import LocalSearchScreen from './Screens/Search/LocalSearchScreen';
 import FoodSearchScreen from './Screens/Search/FoodSearchScreen';
 import ChannelSearchScreen from './Screens/Search/ChannelSearchScreen';
 import StoreListScreen from './Screens/StoreListScreen';
+import StoreItemScreen from './Screens/StoreItemScreen';
 const App = () => {
   const BASE_URL = 'http://192.168.0.12:3000';
   // navigation
@@ -34,17 +35,21 @@ const App = () => {
   const [searchData, setSearchData] = useState(null);
   const [windowWidth,setWindowWidth] = useState(null);
   const [localData,setLocalData]=useState([])
+  const [countryCount,setCountryCount] = useState({})
+  const [countryNumbers,setCountryNumbers] = useState([])
   useEffect(() => {
     if (
       storeData !== null &&
       youtubeVideoData !== null &&
       searchData !== null &&
-      windowWidth !== null
+      windowWidth !== null &&
+      countryNumbers !== null &&
+      countryCount !== null
     ) {
       setIsAppLoading(false);
     }
-  }, [storeData, youtubeVideoData, searchData,windowWidth ]);
-  
+  }, [storeData, youtubeVideoData, searchData,windowWidth,countryCount,countryNumbers ]);
+
   return isAppLoading ? (
     <BASE_URL_Context.Provider value={{BASE_URL}}>
       <DataContext.Provider
@@ -54,7 +59,9 @@ const App = () => {
           setYoutubeVideoData,
           setSearchData,
           setLocalData,
-          setWindowWidth
+          setWindowWidth,
+          setCountryCount,
+          setCountryNumbers
         }}>
         <SafeAreaView style={backgroundStyle}>
           <StatusBar
@@ -68,7 +75,7 @@ const App = () => {
   ) : (
     <BASE_URL_Context.Provider value={BASE_URL}>
       <StyleContext.Provider value={windowWidth}>
-      <DataContext.Provider value={{storeData, youtubeVideoData, searchData}}>
+      <DataContext.Provider value={{storeData, youtubeVideoData, searchData,countryNumbers,countryCount}}>
         <NavigationContainer>
           <Stack.Navigator
             initialRouteName="App"
@@ -116,6 +123,16 @@ const App = () => {
                 key={`country-${country[0]}`}
                 name={`country-${country[0]}`}
                 component={StoreListScreen}
+                options={{headerShown: true}}
+              />)
+            })}
+
+            {searchData.map((store)=>{
+              console.log(store.name)
+              return(<Stack.Screen
+                key={store.name}
+                name={store.name}
+                component={StoreItemScreen}
                 options={{headerShown: true}}
               />)
             })}

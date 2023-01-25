@@ -7,7 +7,7 @@ import {DataContext} from '../ContextAPI/DataContext';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
 import { locals } from '../Datas/locals';
 const LoadingScreen = () => {
-  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth,setLocalData} =
+  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth,setLocalData,setCountryCount,setCountryNumbers} =
   useContext(DataContext);
   const {BASE_URL} = useContext(BASE_URL_Context);
   // network connet checking && version checking && loading
@@ -19,6 +19,7 @@ const LoadingScreen = () => {
     try {
       const serverDataAxios = await axios.get(`${BASE_URL}/api/content`);
       const serverData = serverDataAxios.data;
+      // 
       const storeServerData = await serverData.map(item => {
         return {
           channelName: item.channelName,
@@ -35,6 +36,13 @@ const LoadingScreen = () => {
           
         };
       });
+      setStoreData(storeServerData);
+      const DataToJsonStoreServerData = JSON.stringify(storeServerData);
+      await AsyncStorage.setItem(
+        'storeLocalStorageData',
+        DataToJsonStoreServerData,
+      );
+      // 
       const youtubeVideoServerData = await serverData.map(item => {
         return {
           channelName: item.channelName,
@@ -44,22 +52,7 @@ const LoadingScreen = () => {
           onAir: item.onAir,
         };
       });
-      const searchServerData = await serverData.map(item => {
-        return {
-          listing: item.listing,
-          state: item.state,
-          country: item.country,
-          sectors: item.sectors,
-        };
-      });
-      setStoreData(storeServerData);
       setYoutubeVideoData(youtubeVideoServerData);
-      setSearchData(searchServerData);
-      const DataToJsonStoreServerData = JSON.stringify(storeServerData);
-      await AsyncStorage.setItem(
-        'storeLocalStorageData',
-        DataToJsonStoreServerData,
-      );
       const DataToJsonYoutubeVideoServerData = JSON.stringify(
         youtubeVideoServerData,
       );
@@ -67,11 +60,37 @@ const LoadingScreen = () => {
         'youtubeVideoLocalStorageData',
         DataToJsonYoutubeVideoServerData,
       );
+      //
+      const searcServerDataFilter = await serverData.filter( item => item.address !== null)
+      const searchServerData = searcServerDataFilter.map(item => {
+        return {
+          state: item.state,
+          country: item.country,
+          channelName: item.channelName,
+          name: item.name,
+          // rate
+          // logo
+          address: item.address,
+          sectors: item.sectors,
+        };
+      });
+      setSearchData(searchServerData);
       const DataToJsonSearchServerData = JSON.stringify(searchServerData);
       await AsyncStorage.setItem(
         'searchLocalStorageData',
         DataToJsonSearchServerData,
       );
+      
+      const countryCounter = {}
+      searchServerData.map((store)=>{
+        countryCounter[store.country] = 0
+      })
+      const countryNum = searchServerData.map((store)=>{
+        countryCounter[store.country] = countryCounter[store.country] + 1
+        return store.country
+      })
+      setCountryNumbers(countryNum)
+      setCountryCount(countryCounter)
 
       setNewVersion(newServerVersion);
       setCurrentVersion(newServerVersion);
@@ -86,25 +105,37 @@ const LoadingScreen = () => {
     }
   }
   async function localStorageData(currentVersion) {
+//  
     const storeLocalStorageData = await AsyncStorage.getItem(
       'storeLocalStorageData',
     );
     const JsonToDataStoreLocalStorageData = JSON.parse(storeLocalStorageData);
-
+    setStoreData(JsonToDataStoreLocalStorageData);
+// 
     const youtubeVideoLocalStorageData = await AsyncStorage.getItem(
       'youtubeVideoLocalStorageData',
     );
     const JsonToDataYoutubeVideoLocalStorageData = JSON.parse(
       youtubeVideoLocalStorageData,
     );
-
+    setYoutubeVideoData(JsonToDataYoutubeVideoLocalStorageData);
+// 
     const searchLocalStorageData = await AsyncStorage.getItem(
       'searchLocalStorageData',
     );
     const JsonToDataSearchLocalStorageData = JSON.parse(searchLocalStorageData);
-    setStoreData(JsonToDataStoreLocalStorageData);
-    setYoutubeVideoData(JsonToDataYoutubeVideoLocalStorageData);
     setSearchData(JsonToDataSearchLocalStorageData);
+
+    const countryCounter = {}
+    JsonToDataSearchLocalStorageData.map((store)=>{
+      countryCounter[store.country] = 0
+    })
+    const countryNum = JsonToDataSearchLocalStorageData.map((store)=>{
+      countryCounter[store.country] = countryCounter[store.country] + 1
+      return store.country
+    })
+    setCountryNumbers(countryNum)
+    setCountryCount(countryCounter)
 
     setNewVersion(currentVersion);
     setCurrentVersion(currentVersion);

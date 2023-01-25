@@ -1,10 +1,12 @@
-import React, { useContext, useState } from 'react';
-import { Dimensions, Image, Text, View} from 'react-native';
-import { useEffect } from 'react/cjs/react.development';
+import React, { useContext, useState,useEffect } from 'react';
+import { Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { DataContext } from '../ContextAPI/DataContext';
 import { StyleContext } from '../ContextAPI/StyleContext';
-
+import FontStyle from '../Components/FontStyle';
+import IconStyle from '../Components/IconStyle';
+import IconImage from '../Datas/Icons';
+import ListItem from '../Components/ListItem';
 
 export const ViewTypes = {
   NONE:0,
@@ -25,12 +27,11 @@ export class LayoutUtil{
       }
     },(type,dim)=>{
       const width = windowWidth;
-      let layoutHeight = 100;
 
       switch (type){
         case ViewTypes.SHOW:
           dim.width = width;
-          dim.height = layoutHeight;
+          dim.height = 100;
           break;
         case ViewTypes.NONE:
           dim.width = 0;
@@ -45,29 +46,22 @@ export class LayoutUtil{
   }
 }
 
-export function Card(props){
-  const {address,breakTime,closed,contact,lastOrderTime,name,openTime} = props
-  return (
-    <View style={{backgroundColor:"gray",flex:1,marginBottom:4,marginLeft:16,marginRight:16}}>
-      {/* <Image  source={{uri:uri}}/> */}
-      <Text >{name} {address}</Text>
-    </View>
-  )
-}
-
-
-
-const StoreListScreen = ({route}) => {
+const StoreListScreen = ({route,navigation}) => {
   const {storeData,youtubeVideoData,searchData} = useContext(DataContext)
   const windowWidth = useContext(StyleContext)
   const [listData,setListData] = useState([])
-  const countryNum = route.params.countryNum
+  const navigationType = route.params.type === "local" ? route.params.countryNum : route.params.type === "sectors" ? route.params.sectors : route.params.type === "channelName" ? route.params.channelName : null
   useEffect(()=>{
-    const countryFilter = storeData.filter((store)=>{
-      return countryNum === store.country 
+    const searchFilter = searchData.filter((store)=>{
+      if(route.params.type === "local"){
+        return navigationType === store.country 
+      } else if(route.params.type === "sectors"){
+        return navigationType === store.sectors
+      } else if(route.params.type === "channelName"){
+        return navigationType === store.channelName
+      }
     })
-    console.log(countryFilter)
-    const list = countryFilter.map((store)=>{
+    const list = searchFilter.map((store)=>{
       if(store.address == null){
         store.type = "NONE"
         return store
@@ -87,10 +81,11 @@ const StoreListScreen = ({route}) => {
     dataProvider = dataProvider.cloneWithRows(listData)
     let layoutProvider = LayoutUtil.getLayoutProvider(dataProvider,windowWidth);
     const rowRenderer = (type,listData) =>{
-      const {channelName,country,address,breakTime,closed,contact,lastOrderTime,name,openTime} = listData
+      console.log(listData)
+      const {channelName,country,address,name,sectors,state} = listData
       switch(type){
         case ViewTypes.SHOW:
-          return <Card address={address} breakTime={breakTime} closed={closed} contact={contact} lastOrderTime={lastOrderTime} name={name} openTime={openTime} style={{marginHorizontal:2}}/>
+          return <ListItem navigation={navigation} address={address} name={name} channelName={channelName} country={country} sectors={sectors} style={{marginHorizontal:2}}/>
           default:
             return null
           }
