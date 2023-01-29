@@ -19,8 +19,10 @@ import FoodSearchScreen from './Screens/Search/FoodSearchScreen';
 import ChannelSearchScreen from './Screens/Search/ChannelSearchScreen';
 import StoreListScreen from './Screens/StoreListScreen';
 import StoreItemScreen from './Screens/StoreItemScreen';
+import {API_URL} from "@env"
+import { foodSectors } from './Datas/foodSectors';
 const App = () => {
-  const BASE_URL = 'http://192.168.0.12:3000';
+  const BASE_URL = API_URL;
   // navigation
   const Stack = createNativeStackNavigator();
   // StatusBar dark mode
@@ -121,14 +123,22 @@ const App = () => {
             {localData.map((country)=>{
               return(<Stack.Screen
                 key={`country-${country[0]}`}
-                name={`country-${country[0]}`}
+                name={`${country[3]} ${country[1]}`}
+                component={StoreListScreen}
+                options={{headerShown: true}}
+              />)
+            })}
+
+            {Object.entries(foodSectors).map((food)=>{
+              return(<Stack.Screen
+                key={`food-${food[0]}`}
+                name={`${food[1][0]}`}
                 component={StoreListScreen}
                 options={{headerShown: true}}
               />)
             })}
 
             {searchData.map((store)=>{
-              console.log(store.name)
               return(<Stack.Screen
                 key={store.name}
                 name={store.name}

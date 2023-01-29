@@ -43,8 +43,7 @@ const LocalSearchScreen = ({navigation}) => {
               <TouchableOpacity style={{width:"50%",height:30,marginBottom:8,marginTop:8,flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}
               key={countryName.countryNum}
               onPress={()=>{
-                console.log("click")
-                navigation.navigate(`country-${countryName.countryNum}`,{countryNum:countryName.countryNum,type:"local"})
+                navigation.navigate(`${value.stateKr} ${countryName.countryKr}`,{countryNum:countryName.countryNum,type:"local"})
               }}>
                 <View style={{marginLeft:8}}>
               <FontStyle text={countryName.countryKr} size="medium" marginRight={4}/>

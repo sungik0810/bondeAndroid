@@ -10,6 +10,8 @@ const FontStyle = ({
   marginTop = 0,
   marginBottom = 0,
   textAlign = 'auto',
+  ellipsizeMode = "tail",
+  numberOfLines = 2
 }) => {
   return Platform.OS === 'ios' ? (
     size === 'mini' ? (
@@ -24,8 +26,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'small' ? (
@@ -40,8 +42,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'medium' ? (
@@ -56,8 +58,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'big' ? (
@@ -72,8 +74,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'xLarge' ? (
@@ -88,8 +90,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : (
@@ -108,8 +110,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'small' ? (
@@ -124,8 +126,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'medium' ? (
@@ -140,8 +142,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'big' ? (
@@ -156,8 +158,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : size === 'xLarge' ? (
@@ -172,8 +174,8 @@ const FontStyle = ({
           marginBottom,
           textAlign,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail">
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}>
         {text}
       </Text>
     ) : (

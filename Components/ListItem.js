@@ -4,10 +4,9 @@ import FontStyle from "./FontStyle"
 import IconStyle from "./IconStyle"
 
 const ListItem = ({navigation,address,name})=>{
-    console.log(navigation)
     return (
       <TouchableOpacity style={{height:100,flexDirection:"row",alignItems:"center",borderBottomWidth:1,borderBottomColor:"#D9D9D9"}}
-      onPress={()=>{navigation.navigate(name,{address:address,type:"store"})}}
+      onPress={()=>{navigation.navigate({name:name})}}
       >
         <IconStyle src={<IconImage name="mini"/>} size="medium" borderRadius={8} marginLeft={16} marginRight={16} />
         <View style={{flexShrink:1,width:"50%"}}>

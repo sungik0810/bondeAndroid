@@ -1,11 +1,8 @@
 import React, { useContext, useState,useEffect } from 'react';
-import { Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
+import { Dimensions, Text, View} from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { DataContext } from '../ContextAPI/DataContext';
 import { StyleContext } from '../ContextAPI/StyleContext';
-import FontStyle from '../Components/FontStyle';
-import IconStyle from '../Components/IconStyle';
-import IconImage from '../Datas/Icons';
 import ListItem from '../Components/ListItem';
 
 export const ViewTypes = {
@@ -81,8 +78,7 @@ const StoreListScreen = ({route,navigation}) => {
     dataProvider = dataProvider.cloneWithRows(listData)
     let layoutProvider = LayoutUtil.getLayoutProvider(dataProvider,windowWidth);
     const rowRenderer = (type,listData) =>{
-      console.log(listData)
-      const {channelName,country,address,name,sectors,state} = listData
+      const {channelName,country,address,name,sectors} = listData
       switch(type){
         case ViewTypes.SHOW:
           return <ListItem navigation={navigation} address={address} name={name} channelName={channelName} country={country} sectors={sectors} style={{marginHorizontal:2}}/>
@@ -105,9 +101,9 @@ const StoreListScreen = ({route,navigation}) => {
       />
          
     </View>
-  ):(<View>
+  ):(<View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
     
-    <Text>loading</Text>
+    <Text>Comming Soon</Text>
     </View>)
 };
 

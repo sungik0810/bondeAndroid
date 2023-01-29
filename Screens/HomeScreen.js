@@ -8,6 +8,9 @@ import IconImage from '../Datas/Icons';
 
 const HomeScreen = ({ navigation }) => {
   const windowWidth = useContext(StyleContext)
+  const subTextColor = "black"
+  const subTextSize = "mini"
+  const subTextFontWeight = "400"
   return (
     <ScrollView style={{backgroundColor:"#FF8A00"}}>
       <View style={{backgroundColor:"lightgray"}}>
@@ -33,9 +36,9 @@ const HomeScreen = ({ navigation }) => {
       onPress={()=>{
         navigation.navigate("Channel")
       }}>
-      <FontStyle text="유튜브로 찾기" size="xLarge" fontWeight="900" marginLeft={8}  marginTop={8} marginBottom={8}/>
-      <FontStyle text="유튜브에 나온 맛집" color='gray' size="mini" fontWeight="300" marginLeft={8} />
-      <FontStyle text="여기서 볼 수 있어요" color='gray' size="mini" fontWeight="300" marginLeft={8}/>
+      <FontStyle text="유튜브로 찾기" size="big" fontWeight="900" marginLeft={8}  marginTop={8} marginBottom={8}/>
+      <FontStyle text="유튜브에 나온 맛집" color={subTextColor} size={subTextSize} fontWeight={subTextFontWeight} marginLeft={8} />
+      <FontStyle text="여기서 볼 수 있어요" color={subTextColor} size={subTextSize} fontWeight={subTextFontWeight} marginLeft={8}/>
       </TouchableOpacity >
     </View>
 
@@ -48,16 +51,16 @@ const HomeScreen = ({ navigation }) => {
         navigation.navigate("Food")
       }}>
       <FontStyle text="음식으로 찾기" size="big" fontWeight="900" marginLeft={8} marginTop={8} marginBottom={8}/>
-      <FontStyle text="오늘은 뭐 먹지?" color='gray' size="mini" fontWeight="300" marginLeft={8}/>
-      <FontStyle text="영상으로 확인해보세요" color='gray' size="mini" fontWeight="300" marginLeft={8}  />
+      <FontStyle text="오늘은 뭐 먹지?" color={subTextColor} size={subTextSize} fontWeight={subTextFontWeight} marginLeft={8}/>
+      <FontStyle text="영상으로 확인해보세요" color={subTextColor} size={subTextSize} fontWeight={subTextFontWeight} marginLeft={8}  />
       </TouchableOpacity >
       <TouchableOpacity style={{backgroundColor:"white",borderRadius:8,width:windowWidth/2-24,height:156}}
       onPress={()=>{
         navigation.navigate("Local")
       }}>
       <FontStyle text="지역으로 찾기" size="big" fontWeight="900" marginLeft={8} marginTop={8} marginBottom={8}/>
-      <FontStyle text="여기 주변에 뭐 있지?" color='gray' size="mini" fontWeight="300" marginLeft={8} />
-      <FontStyle text="영상으로 확인해보세요" color='gray' size="mini" fontWeight="300" marginLeft={8} />
+      <FontStyle text="여기 주변에 뭐 있지?" color={subTextColor} size={subTextSize} fontWeight={subTextFontWeight} marginLeft={8} />
+      <FontStyle text="영상으로 확인해보세요" color={subTextColor} size={subTextSize} fontWeight={subTextFontWeight} marginLeft={8} />
       </TouchableOpacity >
       </View>
     </View>
@@ -73,11 +76,11 @@ const HomeScreen = ({ navigation }) => {
         <View style={{flexDirection:"row"}}>
 
         {/* youtube Icon */}
-        <IconStyle src={<IconImage name="mini"/>} size="mini"/>
+        <IconStyle src={<IconImage name="mini"/>} size={subTextSize}/>
         {/* sectors Icon */}
-        <IconStyle src={<IconImage name="mini"/>} size="mini"/>
+        <IconStyle src={<IconImage name="mini"/>} size={subTextSize}/>
         {/* location Icon */}
-        <IconStyle src={<IconImage name="mini"/>} size="mini"/>
+        <IconStyle src={<IconImage name="mini"/>} size={subTextSize}/>
         </View>
       </TouchableOpacity>
       

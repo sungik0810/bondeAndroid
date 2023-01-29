@@ -22,6 +22,7 @@ const LoadingScreen = () => {
       // 
       const storeServerData = await serverData.map(item => {
         return {
+          dataNumber:item.dataNumber,
           channelName: item.channelName,
           country: item.country,
           name: item.name,
@@ -33,7 +34,10 @@ const LoadingScreen = () => {
           lastOrderTime: item.lastOrderTime,
           closed: item.closed,
           contact: item.contact,
-          
+          channelName: item.channelName,
+          thumbnail: item.thumbnail,
+          link: item.link,
+          title: item.title,
         };
       });
       setStoreData(storeServerData);
@@ -209,7 +213,8 @@ const LoadingScreen = () => {
     const countryNumbers = []
     Object.entries(locals).map((state)=>{
       state[1].countryAll.map((country)=>{
-        countryNumbers.push([country.countryNum,country.countryKr,country.countryEn])
+        
+        countryNumbers.push([country.countryNum,country.countryKr,country.countryEn,state[1].stateKr])
       })
     })
     setLocalData(countryNumbers)
