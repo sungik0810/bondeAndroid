@@ -8,7 +8,6 @@ import IconImage from '../../Datas/Icons';
 const FoodSearchScreen = ({navigation}) => {
   const windowWidth = useContext(StyleContext)
   const DATA =Object.entries(foodSectors)
-  // console.log(Object.entries(foodSectors))
   const Item = ({title,icon,width}) => (
     <TouchableOpacity style={{width,height:100,borderRadius:8,marginBottom:16,alignItems:"center"}}
     onPress={()=>{navigation.navigate(`${title}`,{sectors:title,type:"sectors"})}}

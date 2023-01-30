@@ -7,7 +7,7 @@ import {DataContext} from '../ContextAPI/DataContext';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
 import { locals } from '../Datas/locals';
 const LoadingScreen = () => {
-  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth,setLocalData,setCountryCount,setCountryNumbers} =
+  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth,setLocalData,setCountryCount,setCountryNumbers,setChannelItem} =
   useContext(DataContext);
   const {BASE_URL} = useContext(BASE_URL_Context);
   // network connet checking && version checking && loading
@@ -17,6 +17,15 @@ const LoadingScreen = () => {
 
   async function serverData(newServerVersion) {
     try {
+      const channelItemAxios = await axios.get(`${BASE_URL}/api/channel`)
+      const channelItemData = channelItemAxios.data;
+      const channelItem = Object.entries(channelItemData[0].channels)
+      setChannelItem(channelItem)
+      const DataToJsonChannelItemServerData = JSON.stringify(channelItem);
+      await AsyncStorage.setItem(
+        'channelLocalStorageData',
+        DataToJsonChannelItemServerData,
+      );
       const serverDataAxios = await axios.get(`${BASE_URL}/api/content`);
       const serverData = serverDataAxios.data;
       // 
@@ -109,6 +118,12 @@ const LoadingScreen = () => {
     }
   }
   async function localStorageData(currentVersion) {
+    //  
+    const channelLocalStorageData = await AsyncStorage.getItem(
+      'channelLocalStorageData',
+    );
+    const JsonToDataChannelLocalStorageData = JSON.parse(channelLocalStorageData);
+    setChannelItem(JsonToDataChannelLocalStorageData);
 //  
     const storeLocalStorageData = await AsyncStorage.getItem(
       'storeLocalStorageData',

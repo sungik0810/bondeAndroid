@@ -48,6 +48,7 @@ const StoreListScreen = ({route,navigation}) => {
   const windowWidth = useContext(StyleContext)
   const [listData,setListData] = useState([])
   const navigationType = route.params.type === "local" ? route.params.countryNum : route.params.type === "sectors" ? route.params.sectors : route.params.type === "channelName" ? route.params.channelName : null
+  
   useEffect(()=>{
     const searchFilter = searchData.filter((store)=>{
       if(route.params.type === "local"){
@@ -55,6 +56,7 @@ const StoreListScreen = ({route,navigation}) => {
       } else if(route.params.type === "sectors"){
         return navigationType === store.sectors
       } else if(route.params.type === "channelName"){
+        console.log(store.channelName)
         return navigationType === store.channelName
       }
     })

@@ -35,6 +35,7 @@ const App = () => {
   const [storeData, setStoreData] = useState(null);
   const [youtubeVideoData, setYoutubeVideoData] = useState(null);
   const [searchData, setSearchData] = useState(null);
+  const [channelItem,setChannelItem] = useState(null)
   const [windowWidth,setWindowWidth] = useState(null);
   const [localData,setLocalData]=useState([])
   const [countryCount,setCountryCount] = useState({})
@@ -46,12 +47,12 @@ const App = () => {
       searchData !== null &&
       windowWidth !== null &&
       countryNumbers !== null &&
-      countryCount !== null
+      countryCount !== null &&
+      channelItem !== null
     ) {
       setIsAppLoading(false);
     }
-  }, [storeData, youtubeVideoData, searchData,windowWidth,countryCount,countryNumbers ]);
-
+  }, [storeData, youtubeVideoData, searchData,windowWidth,countryCount,countryNumbers,channelItem ]);
   return isAppLoading ? (
     <BASE_URL_Context.Provider value={{BASE_URL}}>
       <DataContext.Provider
@@ -63,7 +64,8 @@ const App = () => {
           setLocalData,
           setWindowWidth,
           setCountryCount,
-          setCountryNumbers
+          setCountryNumbers,
+          setChannelItem
         }}>
         <SafeAreaView style={backgroundStyle}>
           <StatusBar
@@ -77,7 +79,7 @@ const App = () => {
   ) : (
     <BASE_URL_Context.Provider value={BASE_URL}>
       <StyleContext.Provider value={windowWidth}>
-      <DataContext.Provider value={{storeData, youtubeVideoData, searchData,countryNumbers,countryCount}}>
+      <DataContext.Provider value={{storeData, youtubeVideoData, searchData,countryNumbers,countryCount,channelItem}}>
         <NavigationContainer>
           <Stack.Navigator
             initialRouteName="App"
@@ -138,6 +140,15 @@ const App = () => {
               />)
             })}
 
+            {channelItem.map((channel)=>{
+              return(<Stack.Screen
+                key={`channel-${channel[0]}`}
+                name={channel[1][0]}
+                component={StoreListScreen}
+                options={{headerShown: true}}
+              />)
+            })}
+
             {searchData.map((store)=>{
               return(<Stack.Screen
                 key={store.name}
@@ -146,6 +157,7 @@ const App = () => {
                 options={{headerShown: true}}
               />)
             })}
+
             
 
           </Stack.Navigator>
