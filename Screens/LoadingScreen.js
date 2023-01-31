@@ -36,7 +36,7 @@ const LoadingScreen = () => {
           country: item.country,
           name: item.name,
           // rate
-          // logo
+          logo:item.logo,
           address: item.address,
           openTime: item.openTime,
           breakTime: item.breakTime,
@@ -47,6 +47,7 @@ const LoadingScreen = () => {
           thumbnail: item.thumbnail,
           link: item.link,
           title: item.title,
+          onAir:item.onAir
         };
       });
       setStoreData(storeServerData);
@@ -82,7 +83,7 @@ const LoadingScreen = () => {
           channelName: item.channelName,
           name: item.name,
           // rate
-          // logo
+          logo: item.logo,
           address: item.address,
           sectors: item.sectors,
         };

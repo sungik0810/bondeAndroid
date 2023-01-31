@@ -28,7 +28,7 @@ export class LayoutUtil{
       switch (type){
         case ViewTypes.SHOW:
           dim.width = width;
-          dim.height = 100;
+          dim.height = 110;
           break;
         case ViewTypes.NONE:
           dim.width = 0;
@@ -56,7 +56,6 @@ const StoreListScreen = ({route,navigation}) => {
       } else if(route.params.type === "sectors"){
         return navigationType === store.sectors
       } else if(route.params.type === "channelName"){
-        console.log(store.channelName)
         return navigationType === store.channelName
       }
     })
@@ -80,10 +79,11 @@ const StoreListScreen = ({route,navigation}) => {
     dataProvider = dataProvider.cloneWithRows(listData)
     let layoutProvider = LayoutUtil.getLayoutProvider(dataProvider,windowWidth);
     const rowRenderer = (type,listData) =>{
-      const {channelName,country,address,name,sectors} = listData
+
+      const {channelName,country,address,name,sectors,logo} = listData
       switch(type){
         case ViewTypes.SHOW:
-          return <ListItem navigation={navigation} address={address} name={name} channelName={channelName} country={country} sectors={sectors} style={{marginHorizontal:2}}/>
+          return <ListItem navigation={navigation} address={address} name={name} channelName={channelName} country={country} sectors={sectors} style={{marginHorizontal:2}} uri={logo}/>
           default:
             return null
           }
