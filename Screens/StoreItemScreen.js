@@ -1,10 +1,12 @@
-import { Text, View,ScrollView, TouchableOpacity, Linking } from "react-native"
+import { Text, View,ScrollView, TouchableOpacity, Linking, Dimensions } from "react-native"
 import React, {useContext, useEffect, useState} from 'react';
 import IconStyle from "../Components/IconStyle";
 import IconImage from "../Datas/Icons";
 import FontStyle from "../Components/FontStyle";
 import { StyleContext } from "../ContextAPI/StyleContext";
 import { DataContext } from "../ContextAPI/DataContext";
+import LoginBtn from "../Components/LoginBtn";
+import SocialLoginBtn from "../Components/SocialLoginBtn";
 const StoreItemScreen = ({route,navigation}) => {
     const {storeData,youtubeVideoData,searchData} = useContext(DataContext)
     // console.log(storeData)
@@ -22,13 +24,22 @@ const StoreItemScreen = ({route,navigation}) => {
         setYoutubeLinks(storeDataFilter)
         setStoreInfo(storeInfo[0])
     },[])
+
+    const screenHeight = Dimensions.get("screen").height
+    console.log(screenHeight)
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,position:"relative"}}>
             {/* photo */}
             <View style={{flex:0.3,justifyContent:"center"}}>
                 <View style={{backgroundColor:"white",aspectRatio:16/9,marginLeft:16,marginRight:16,borderRadius:8}}>
                 </View>
             </View>
+
+            {/* login Checking
+
+            <View style={{width:"70%",height:"100%",marginLeft:16,marginRight:16,position:"absolute",backgroundColor:"red",}}>
+                <View style={{width:"100%",height:"100%",backgroundColor:"red"}}></View>
+            </View> */}
 
             {/* info selector */}
             <View style={{flex:0.7}}>
@@ -118,6 +129,17 @@ const StoreItemScreen = ({route,navigation}) => {
                 </ScrollView>
             </View>
             }
+            </View>
+
+            {/* login Checking */}
+
+            <View style={{width:"100%",height:"70%",bottom:0,position:"absolute",backgroundColor:"rgba(255,255,255,0.95)",justifyContent:"center",alignItems:"center"}}>
+                <View style={{marginLeft:32,marginRight:32,marginBottom:20}}>
+                    <FontStyle text="로그인하고" size="xLarge" fontWeight="400" numberOfLines={3} textAlign="center"/>
+                    <FontStyle text="가게가 출연한 영상을" size="xLarge" fontWeight="400" numberOfLines={1} textAlign="center"/>
+                    <FontStyle text="확인해보세요" size="xLarge" fontWeight="400" numberOfLines={3} textAlign="center"/>
+                </View>
+                <SocialLoginBtn />
             </View>
         </View>
     )

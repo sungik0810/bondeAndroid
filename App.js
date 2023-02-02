@@ -3,7 +3,10 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  Text,
+  TouchableOpacity,
   useColorScheme,
+  View,
 } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {BASE_URL_Context} from './ContextAPI/BASE_URL_Context';
@@ -21,6 +24,8 @@ import StoreListScreen from './Screens/StoreListScreen';
 import StoreItemScreen from './Screens/StoreItemScreen';
 import {API_URL} from "@env"
 import { foodSectors } from './Datas/foodSectors';
+import LoginScreen from './Screens/LoginScreen';
+import RegisterScreen from './Screens/Register/RegisterScreen';
 const App = () => {
   const BASE_URL = API_URL;
   // navigation
@@ -97,9 +102,34 @@ const App = () => {
               
             }}>
             <Stack.Screen
-              name="Home"
+              name="BONDE"
               component={HomeScreen}
-              options={{headerShown: true}}
+              options={({navigation})=>({
+                title:"",
+                headerLeft:()=><View>
+                  <Text>logoImage</Text>
+                </View>,
+                headerRight:()=><TouchableOpacity style={{backgroundColor:"green"}}
+                onPress={()=>{navigation.navigate("Login")}}>
+                  <Text>login</Text>
+                </TouchableOpacity>
+              })}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={({navigation})=>({headerShown: true,
+                title:"",
+                headerStyle: {
+                  backgroundColor: '#FF8A00',
+                },
+                headerTintColor: '#000000',
+              })}
             />
             <Stack.Screen
               name="Channel"
