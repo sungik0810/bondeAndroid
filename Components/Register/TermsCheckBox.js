@@ -14,7 +14,7 @@ const TermsCheckBox = ({setAllCheck,allCheck,setState,state,text}) => {
           {state ? <IconStyle src={<IconImage name="mini"/>} size="mini" marginLeft={0} marginRight={0} marginTop={0} marginBottom={0}/> : null}
         </Pressable>
         <View style={{width:windowWidth-56,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
-            <FontStyle text={text} size="medium" fontWeight='400'marginLeft={16}/>
+            <FontStyle text={text} size="mini" marginLeft={16}/>
             <TouchableOpacity>
                 <FontStyle text="약관 보기" size="small"/>
             </TouchableOpacity>
