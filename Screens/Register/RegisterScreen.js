@@ -1,6 +1,13 @@
 import {Picker} from '@react-native-picker/picker';
 import React, {useEffect, useContext, useState} from 'react';
-import {Animated, Pressable, Text, TextInput, View} from 'react-native';
+import {
+  Animated,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import FontStyle from '../../Components/FontStyle';
 import IconStyle from '../../Components/IconStyle';
 import RegisterBtn from '../../Components/Register/RegisterBtn';
@@ -26,7 +33,7 @@ const RegisterScreen = () => {
   const [agree4, setAgree4] = useState(false);
   const [agree5, setAgree5] = useState(false);
   const [nationPicker, setNationPicker] = useState({
-    nation: '',
+    nation: '+82',
   });
   const [phoneNum, setPhoneNum] = useState({value: ''});
   const [phoneOuthNum, setPhoneOuthNum] = useState({value: ''});
@@ -43,7 +50,10 @@ const RegisterScreen = () => {
   const [passwordCheckAlert, setPasswordCheckAlert] = useState(null);
   const [nameAlert, setNameAlert] = useState(null);
   const [nickNameAlert, setNickNameAlert] = useState(null);
-  const [genderAlert, setGenderAlert] = useState(null);
+  const [birthAlert, setBirthAlert] = useState(null);
+  const [emailDuplicationAlert, setEmailDuplicationAlert] = useState(null);
+  const [nickNameDuplicationAlert, setNickNameDuplicationAlert] =
+    useState(null);
   useEffect(() => {
     setPage(pageEditing);
     if (agree1 && agree2 && agree3 && agree4 && agree5) {
@@ -110,9 +120,9 @@ const RegisterScreen = () => {
   };
 
   //중복확인
-  const [emailDuplicationCheck, setEmailDuplicationCheck] = useState(false);
+  const [emailDuplicationCheck, setEmailDuplicationCheck] = useState(true);
   const [nickNameDuplicationCheck, setNickNameDuplicationCheck] =
-    useState(false);
+    useState(true);
   return (
     <View
       style={{
@@ -242,49 +252,52 @@ const RegisterScreen = () => {
             marginLeft: 16,
             marginRight: 16,
             position: 'relative',
-            flexDirection: 'row',
+            // flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Picker
-            style={{
-              width: '40%',
-              height: 40,
-              justifyContent: 'center',
-              overflow: 'hidden',
-            }}
-            selectedValue={nationPicker.nation}
-            onValueChange={(itemValue, itemIndex) => {
-              setNationPicker({nation: itemValue});
-            }}>
-            <Picker.Item label="대한민국" value="+82" />
-            <Picker.Item label="USA" value="+1" />
-            <Picker.Item label="日本" value="+81" />
-            <Picker.Item label="中国" value="+86" />
-          </Picker>
-          <View style={{width: '60%'}}>
-            <Animated.View style={getInputStyle()}></Animated.View>
-            <TextInput
-              style={{width: '100%', height: 40, fontSize: 20, marginLeft: 8}}
-              onFocus={() => {
-                setFocus(true);
+          <ScrollView>
+            <Picker
+              style={{
+                width: '40%',
+                height: 40,
+                justifyContent: 'center',
+                overflow: 'hidden',
+                position: 'absolute',
               }}
-              onBlur={() => {
-                setFocus(false);
-              }}
-              placeholder="01012345678"
-              keyboardType="number-pad"
-              value={phoneNum.value}
-              onChangeText={e => {
-                setPhoneNum({value: e});
-              }}
-              maxLength={11}
-            />
-          </View>
+              selectedValue={nationPicker.nation}
+              onValueChange={(itemValue, itemIndex) => {
+                setNationPicker({nation: itemValue});
+              }}>
+              <Picker.Item label="대한민국" value="+82" />
+              <Picker.Item label="USA" value="+1" />
+              <Picker.Item label="日本" value="+81" />
+              <Picker.Item label="中国" value="+86" />
+            </Picker>
+            <View style={{width: '60%', position: 'absolute', right: 0}}>
+              <Animated.View style={getInputStyle()}></Animated.View>
+              <TextInput
+                style={{width: '100%', height: 40, fontSize: 20, marginLeft: 8}}
+                onFocus={() => {
+                  setFocus(true);
+                }}
+                onBlur={() => {
+                  setFocus(false);
+                }}
+                placeholder="01012345678"
+                keyboardType="number-pad"
+                value={phoneNum.value}
+                onChangeText={e => {
+                  setPhoneNum({value: e});
+                }}
+                maxLength={11}
+              />
+            </View>
+          </ScrollView>
         </View>
         {/* page2 */}
         <View
           style={{width: windowWidth - 32, marginLeft: 16, marginRight: 16}}>
-          <View style={{width: '100%'}}>
+          <ScrollView style={{width: '100%'}}>
             <Animated.View
               style={[getInputStyle(), animationStyle()]}></Animated.View>
             <TextInput
@@ -303,33 +316,37 @@ const RegisterScreen = () => {
               }}
               maxLength={6}
             />
-          </View>
+          </ScrollView>
         </View>
         {/* page3 */}
         {/* {page > 1 && ( */}
         <RegisterInfoForm
           windowWidth={windowWidth}
           getInputStyle={getInputStyle}
-          animationStyle={animationStyle}
-          setFocus={setFocus}
           setRegisterInfo={setRegisterInfo}
           registerInfo={registerInfo}
           setButtonDisabled={setButtonDisabled}
           phoneNum={phoneNum}
           emailDuplicationCheck={emailDuplicationCheck}
           nickNameDuplicationCheck={nickNameDuplicationCheck}
+          setEmailDuplicationCheck={setEmailDuplicationCheck}
+          setNickNameDuplicationCheck={setNickNameDuplicationCheck}
           setEmailAlert={setEmailAlert}
           setPasswordAlert={setPasswordAlert}
           setPasswordCheckAlert={setPasswordCheckAlert}
           setNameAlert={setNameAlert}
           setNickNameAlert={setNickNameAlert}
-          setGenderAlert={setGenderAlert}
+          setBirthAlert={setBirthAlert}
           emailAlert={emailAlert}
           passwordAlert={passwordAlert}
           passwordCheckAlert={passwordCheckAlert}
           nameAlert={nameAlert}
           nickNameAlert={nickNameAlert}
-          genderAlert={genderAlert}
+          birthAlert={birthAlert}
+          emailDuplicationAlert={emailDuplicationAlert}
+          nickNameDuplicationAlert={nickNameDuplicationAlert}
+          setEmailDuplicationAlert={setEmailDuplicationAlert}
+          setNickNameDuplicationAlert={setNickNameDuplicationAlert}
         />
         {/* )} */}
         {/* page4 */}
@@ -346,17 +363,24 @@ const RegisterScreen = () => {
         buttonDisabled={buttonDisabled}
         phoneNum={phoneNum}
         phoneOuthNum={phoneOuthNum}
+        allCheck={allCheck}
         agree1={agree1}
         agree2={agree2}
+        agree3={agree3}
+        agree4={agree4}
+        agree5={agree5}
         registerInfo={registerInfo}
         emailAlert={emailAlert}
         passwordAlert={passwordAlert}
         passwordCheckAlert={passwordCheckAlert}
         nameAlert={nameAlert}
         nickNameAlert={nickNameAlert}
-        genderAlert={genderAlert}
+        birthAlert={birthAlert}
         setEmailDuplicationCheck={setEmailDuplicationCheck}
         setNickNameDuplicationCheck={setNickNameDuplicationCheck}
+        nationPicker={nationPicker}
+        emailDuplicationAlert={emailDuplicationAlert}
+        nickNameDuplicationAlert={nickNameDuplicationAlert}
       />
     </View>
   );

@@ -8,22 +8,29 @@ const RegisterBtn = ({
   page,
   setButtonDisabled,
   buttonDisabled,
+  nationPicker,
   phoneNum,
   phoneOuthNum,
+  allCheck,
   agree1,
   agree2,
+  agree3,
+  agree4,
+  agree5,
   registerInfo,
   emailAlert,
   passwordAlert,
   passwordCheckAlert,
   nameAlert,
   nickNameAlert,
-  genderAlert,
+  birthAlert,
   setEmailDuplicationCheck,
   setNickNameDuplicationCheck,
+  emailDuplicationAlert,
+  nickNameDuplicationAlert,
 }) => {
   const BASE_URL = useContext(BASE_URL_Context);
-  console.log(registerInfo);
+
   useEffect(() => {
     if (page === 0 && agree1 === true && agree2 === true) {
       setButtonDisabled(false);
@@ -34,50 +41,61 @@ const RegisterBtn = ({
     if (page === 1 && phoneNum.value.length === 11) {
       setButtonDisabled(false);
     }
+  }, [page, agree1, agree2]);
 
+  useEffect(() => {
+    // server에서 중복되는 번호가 있는지 확인해야됨
+    if (page === 1 && phoneNum.value.length === 11) {
+      setButtonDisabled(false);
+    }
+  }, [phoneNum]);
+  useEffect(() => {
+    // server에서 만든 번호랑 같아야됨
     if (page === 2 && phoneOuthNum.value.length === 6) {
       setButtonDisabled(false);
     }
+  }, [phoneOuthNum]);
+  useEffect(() => {
+    console.log(
+      emailAlert,
+      passwordAlert,
+      passwordCheckAlert,
+      nameAlert,
+      nickNameAlert,
+      birthAlert,
+      emailDuplicationAlert,
+      nickNameDuplicationAlert,
+    );
     if (
-      /^[0-9]+$/.test(registerInfo.birth) &&
-      registerInfo.birth.length === 6 &&
-      !['', null].includes(registerInfo.email) &&
-      !['', null].includes(registerInfo.gender) &&
-      !['', null].includes(registerInfo.name) &&
-      !['', null].includes(registerInfo.nickName) &&
-      registerInfo.password.length > 9 &&
+      page === 3 &&
       emailAlert == null &&
       passwordAlert == null &&
       passwordCheckAlert == null &&
       nameAlert == null &&
       nickNameAlert == null &&
-      genderAlert == null &&
-      ['1', '2', '3', '4'].includes(registerInfo.gender)
+      birthAlert == null &&
+      emailDuplicationAlert == false &&
+      nickNameDuplicationAlert == false
     ) {
       setButtonDisabled(false);
     }
   }, [
-    page,
-    agree1,
-    agree2,
-    phoneNum,
-    phoneOuthNum,
-    registerInfo,
     emailAlert,
     passwordAlert,
     passwordCheckAlert,
     nameAlert,
     nickNameAlert,
-    genderAlert,
+    birthAlert,
+    emailDuplicationAlert,
+    nickNameDuplicationAlert,
   ]);
-
   return (
     <View style={{flex: 0.15, width: '100%'}}>
       <TouchableOpacity
         style={{
           width: '100%',
           height: 44,
-          backgroundColor: '#FF8A00',
+          backgroundColor: !buttonDisabled ? '#FF8A00' : 'gray',
           borderRadius: 8,
           justifyContent: 'center',
           alignItems: 'center',
@@ -87,16 +105,21 @@ const RegisterBtn = ({
             ? (setPage(1), setButtonDisabled(true))
             : page === 1
             ? axios
-                .post(`${BASE_URL}/api/phone`, {phoneNum: phoneNum})
+                .post(`${BASE_URL}/register/send`, {
+                  phoneNum: phoneNum,
+                  nationNum: nationPicker,
+                })
                 .then(result => {
+                  console.log(result.data);
                   result.data === 'success'
                     ? (setPage(2), setButtonDisabled(true))
                     : (console.log('잘못된 번호입니다.'),
-                      setButtonDisabled(true));
+                      setButtonDisabled(false));
                 })
                 .catch(err => {
                   console.log(err);
-                  setPage(2), setButtonDisabled(true);
+                  // setPage(2),
+                  setButtonDisabled(false);
                 })
             : page === 2
             ? axios
@@ -114,16 +137,22 @@ const RegisterBtn = ({
                 })
             : page === 3
             ? axios
-                .post(`${BASE_URL}/api/register`)
-                .then(result => {
-                  result.data.duplicationCheck
-                    ? (setEmailDuplicationCheck(true),
-                      setNickNameDuplicationCheck(true))
-                    : (setEmailDuplicationCheck(false),
-                      setNickNameDuplicationCheck(false),
-                      (setPage(4), setButtonDisabled(false)));
+                .post(`${BASE_URL}/register/submit`, {
+                  TOS: [allCheck, agree1, agree2, agree3, agree4, agree5],
+                  email: registerInfo.email,
+                  password: registerInfo.password,
+                  phone: phoneNum.value,
+                  name: registerInfo.name,
+                  nickName: registerInfo.nickName,
+                  birth: registerInfo.birth,
+                  gender: registerInfo.gender,
                 })
-                .catch(err => {})
+                .then(result => {
+                  // result.data  true == 중복이 있음 , false == 중복이 없음
+                })
+                .catch(err => {
+                  console.log(err);
+                })
             : null;
         }}
         disabled={buttonDisabled}>
