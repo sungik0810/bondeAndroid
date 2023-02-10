@@ -3,7 +3,10 @@ import {useContext, useEffect} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {BASE_URL_Context} from '../../ContextAPI/BASE_URL_Context';
 import FontStyle from '../FontStyle';
+import {PHONE_SEND, PHONE_VERIFY} from '@env';
+import {DataContext} from '../../ContextAPI/DataContext';
 const RegisterBtn = ({
+  navigation,
   setPage,
   page,
   setButtonDisabled,
@@ -30,7 +33,8 @@ const RegisterBtn = ({
   nickNameDuplicationAlert,
 }) => {
   const BASE_URL = useContext(BASE_URL_Context);
-
+  const {deviceId} = useContext(DataContext);
+  console.log(deviceId);
   useEffect(() => {
     if (page === 0 && agree1 === true && agree2 === true) {
       setButtonDisabled(false);
@@ -44,13 +48,11 @@ const RegisterBtn = ({
   }, [page, agree1, agree2]);
 
   useEffect(() => {
-    // server에서 중복되는 번호가 있는지 확인해야됨
     if (page === 1 && phoneNum.value.length === 11) {
       setButtonDisabled(false);
     }
   }, [phoneNum]);
   useEffect(() => {
-    // server에서 만든 번호랑 같아야됨
     if (page === 2 && phoneOuthNum.value.length === 6) {
       setButtonDisabled(false);
     }
@@ -105,35 +107,46 @@ const RegisterBtn = ({
             ? (setPage(1), setButtonDisabled(true))
             : page === 1
             ? axios
-                .post(`${BASE_URL}/register/send`, {
+                .post(`${BASE_URL}${PHONE_SEND}`, {
                   phoneNum: phoneNum,
                   nationNum: nationPicker,
+                  deviceId: deviceId,
                 })
                 .then(result => {
                   console.log(result.data);
-                  result.data === 'success'
-                    ? (setPage(2), setButtonDisabled(true))
-                    : (console.log('잘못된 번호입니다.'),
-                      setButtonDisabled(false));
+                  result.data.duplication
+                    ? (console.log('이미 등록된 번호입니다.'),
+                      setButtonDisabled(false))
+                    : result.data.limit
+                    ? (console.log('일일 요청 초과입니다.'),
+                      setButtonDisabled(true))
+                    : (setPage(2), setButtonDisabled(true));
                 })
                 .catch(err => {
                   console.log(err);
                   // setPage(2),
-                  setButtonDisabled(false);
+                  setButtonDisabled(true);
                 })
             : page === 2
             ? axios
-                .post(`${BASE_URL}/api/phoneCheck`, {
+                .post(`${BASE_URL}${PHONE_VERIFY}`, {
+                  phoneNum: phoneNum,
                   phoneOuthNum: phoneOuthNum,
                 })
                 .then(result => {
-                  result.data === 'success'
+                  console.log(result.data);
+                  result.data.timeLimit
+                    ? (console.log('시간이 만료되었습니다.'), setPage(1))
+                    : result.data.state
                     ? (setPage(3), setButtonDisabled(true))
                     : console.log('인증번호가 틀렸습니다.');
+                  // result.data === 'success'
+                  //   ? (setPage(3), setButtonDisabled(true))
+                  //   : console.log('인증번호가 틀렸습니다.');
                 })
                 .catch(err => {
                   console.log(err);
-                  setPage(3), setButtonDisabled(true);
+                  setButtonDisabled(true);
                 })
             : page === 3
             ? axios
@@ -148,6 +161,9 @@ const RegisterBtn = ({
                   gender: registerInfo.gender,
                 })
                 .then(result => {
+                  result.data === 'success'
+                    ? navigation.navigate('Login')
+                    : console.log('회원가입 에러 발생');
                   // result.data  true == 중복이 있음 , false == 중복이 없음
                 })
                 .catch(err => {

@@ -5,22 +5,33 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNetInfo} from '@react-native-community/netinfo';
 import {DataContext} from '../ContextAPI/DataContext';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
-import { locals } from '../Datas/locals';
+import {locals} from '../Datas/locals';
+import {getUniqueId} from 'react-native-device-info';
 const LoadingScreen = () => {
-  const {setStoreData, setYoutubeVideoData, setSearchData, setWindowWidth,setLocalData,setCountryCount,setCountryNumbers,setChannelItem} =
-  useContext(DataContext);
+  const {
+    setStoreData,
+    setYoutubeVideoData,
+    setSearchData,
+    setWindowWidth,
+    setLocalData,
+    setCountryCount,
+    setCountryNumbers,
+    setChannelItem,
+    setDeviceId,
+  } = useContext(DataContext);
   const {BASE_URL} = useContext(BASE_URL_Context);
   // network connet checking && version checking && loading
   const netInfo = useNetInfo();
   const [newVersion, setNewVersion] = useState('');
   const [currentVersion, setCurrentVersion] = useState('');
-
+  const uniqueId = getUniqueId();
+  // setDeviceId(uniqueId._j);
   async function serverData(newServerVersion) {
     try {
-      const channelItemAxios = await axios.get(`${BASE_URL}/api/channel`)
+      const channelItemAxios = await axios.get(`${BASE_URL}/api/channel`);
       const channelItemData = channelItemAxios.data;
-      const channelItem = Object.entries(channelItemData[0].channels)
-      setChannelItem(channelItem)
+      const channelItem = Object.entries(channelItemData[0].channels);
+      setChannelItem(channelItem);
       const DataToJsonChannelItemServerData = JSON.stringify(channelItem);
       await AsyncStorage.setItem(
         'channelLocalStorageData',
@@ -28,15 +39,15 @@ const LoadingScreen = () => {
       );
       const serverDataAxios = await axios.get(`${BASE_URL}/api/content`);
       const serverData = serverDataAxios.data;
-      // 
+      //
       const storeServerData = await serverData.map(item => {
         return {
-          dataNumber:item.dataNumber,
+          dataNumber: item.dataNumber,
           channelName: item.channelName,
           country: item.country,
           name: item.name,
           // rate
-          logo:item.logo,
+          logo: item.logo,
           address: item.address,
           openTime: item.openTime,
           breakTime: item.breakTime,
@@ -47,7 +58,7 @@ const LoadingScreen = () => {
           thumbnail: item.thumbnail,
           link: item.link,
           title: item.title,
-          onAir:item.onAir
+          onAir: item.onAir,
         };
       });
       setStoreData(storeServerData);
@@ -56,7 +67,7 @@ const LoadingScreen = () => {
         'storeLocalStorageData',
         DataToJsonStoreServerData,
       );
-      // 
+      //
       const youtubeVideoServerData = await serverData.map(item => {
         return {
           channelName: item.channelName,
@@ -75,7 +86,9 @@ const LoadingScreen = () => {
         DataToJsonYoutubeVideoServerData,
       );
       //
-      const searcServerDataFilter = await serverData.filter( item => item.address !== null)
+      const searcServerDataFilter = await serverData.filter(
+        item => item.address !== null,
+      );
       const searchServerData = searcServerDataFilter.map(item => {
         return {
           state: item.state,
@@ -94,17 +107,17 @@ const LoadingScreen = () => {
         'searchLocalStorageData',
         DataToJsonSearchServerData,
       );
-      
-      const countryCounter = {}
-      searchServerData.map((store)=>{
-        countryCounter[store.country] = 0
-      })
-      const countryNum = searchServerData.map((store)=>{
-        countryCounter[store.country] = countryCounter[store.country] + 1
-        return store.country
-      })
-      setCountryNumbers(countryNum)
-      setCountryCount(countryCounter)
+
+      const countryCounter = {};
+      searchServerData.map(store => {
+        countryCounter[store.country] = 0;
+      });
+      const countryNum = searchServerData.map(store => {
+        countryCounter[store.country] = countryCounter[store.country] + 1;
+        return store.country;
+      });
+      setCountryNumbers(countryNum);
+      setCountryCount(countryCounter);
 
       setNewVersion(newServerVersion);
       setCurrentVersion(newServerVersion);
@@ -119,19 +132,21 @@ const LoadingScreen = () => {
     }
   }
   async function localStorageData(currentVersion) {
-    //  
+    //
     const channelLocalStorageData = await AsyncStorage.getItem(
       'channelLocalStorageData',
     );
-    const JsonToDataChannelLocalStorageData = JSON.parse(channelLocalStorageData);
+    const JsonToDataChannelLocalStorageData = JSON.parse(
+      channelLocalStorageData,
+    );
     setChannelItem(JsonToDataChannelLocalStorageData);
-//  
+    //
     const storeLocalStorageData = await AsyncStorage.getItem(
       'storeLocalStorageData',
     );
     const JsonToDataStoreLocalStorageData = JSON.parse(storeLocalStorageData);
     setStoreData(JsonToDataStoreLocalStorageData);
-// 
+    //
     const youtubeVideoLocalStorageData = await AsyncStorage.getItem(
       'youtubeVideoLocalStorageData',
     );
@@ -139,23 +154,23 @@ const LoadingScreen = () => {
       youtubeVideoLocalStorageData,
     );
     setYoutubeVideoData(JsonToDataYoutubeVideoLocalStorageData);
-// 
+    //
     const searchLocalStorageData = await AsyncStorage.getItem(
       'searchLocalStorageData',
     );
     const JsonToDataSearchLocalStorageData = JSON.parse(searchLocalStorageData);
     setSearchData(JsonToDataSearchLocalStorageData);
 
-    const countryCounter = {}
-    JsonToDataSearchLocalStorageData.map((store)=>{
-      countryCounter[store.country] = 0
-    })
-    const countryNum = JsonToDataSearchLocalStorageData.map((store)=>{
-      countryCounter[store.country] = countryCounter[store.country] + 1
-      return store.country
-    })
-    setCountryNumbers(countryNum)
-    setCountryCount(countryCounter)
+    const countryCounter = {};
+    JsonToDataSearchLocalStorageData.map(store => {
+      countryCounter[store.country] = 0;
+    });
+    const countryNum = JsonToDataSearchLocalStorageData.map(store => {
+      countryCounter[store.country] = countryCounter[store.country] + 1;
+      return store.country;
+    });
+    setCountryNumbers(countryNum);
+    setCountryCount(countryCounter);
 
     setNewVersion(currentVersion);
     setCurrentVersion(currentVersion);
@@ -218,23 +233,28 @@ const LoadingScreen = () => {
       const t0 = performance.now();
       appVersionChecker();
       const windowWidth = Dimensions.get('window').width;
-      setWindowWidth(windowWidth)
+      setWindowWidth(windowWidth);
+      setDeviceId(uniqueId._j);
       const t1 = performance.now();
       console.log('Time taken:', (t1 - t0).toFixed(4), 'ms');
       return;
     }
   }, [netInfo.isConnected]);
 
-  useEffect(()=>{
-    const countryNumbers = []
-    Object.entries(locals).map((state)=>{
-      state[1].countryAll.map((country)=>{
-        
-        countryNumbers.push([country.countryNum,country.countryKr,country.countryEn,state[1].stateKr])
-      })
-    })
-    setLocalData(countryNumbers)
-  },[])
+  useEffect(() => {
+    const countryNumbers = [];
+    Object.entries(locals).map(state => {
+      state[1].countryAll.map(country => {
+        countryNumbers.push([
+          country.countryNum,
+          country.countryKr,
+          country.countryEn,
+          state[1].stateKr,
+        ]);
+      });
+    });
+    setLocalData(countryNumbers);
+  }, []);
   return (
     <View>
       <Text>Loading...</Text>

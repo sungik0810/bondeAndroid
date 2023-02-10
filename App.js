@@ -14,7 +14,7 @@ import {DataContext} from './ContextAPI/DataContext';
 import LoadingScreen from './Screens/LoadingScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import { StyleContext } from './ContextAPI/StyleContext';
+import {StyleContext} from './ContextAPI/StyleContext';
 import HomeScreen from './Screens/HomeScreen';
 import MypageScreen from './Screens/MypageScreen';
 import LocalSearchScreen from './Screens/Search/LocalSearchScreen';
@@ -22,10 +22,12 @@ import FoodSearchScreen from './Screens/Search/FoodSearchScreen';
 import ChannelSearchScreen from './Screens/Search/ChannelSearchScreen';
 import StoreListScreen from './Screens/StoreListScreen';
 import StoreItemScreen from './Screens/StoreItemScreen';
-import {API_URL} from "@env"
-import { foodSectors } from './Datas/foodSectors';
+import {API_URL} from '@env';
+import {foodSectors} from './Datas/foodSectors';
 import LoginScreen from './Screens/LoginScreen';
 import RegisterScreen from './Screens/Register/RegisterScreen';
+import {getUniqueId} from 'react-native-device-info';
+import EmailLoginScreen from './Screens/EmailLoginScreen';
 const App = () => {
   const BASE_URL = API_URL;
   // navigation
@@ -40,11 +42,13 @@ const App = () => {
   const [storeData, setStoreData] = useState(null);
   const [youtubeVideoData, setYoutubeVideoData] = useState(null);
   const [searchData, setSearchData] = useState(null);
-  const [channelItem,setChannelItem] = useState(null)
-  const [windowWidth,setWindowWidth] = useState(null);
-  const [localData,setLocalData]=useState([])
-  const [countryCount,setCountryCount] = useState({})
-  const [countryNumbers,setCountryNumbers] = useState([])
+  const [channelItem, setChannelItem] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(null);
+  const [localData, setLocalData] = useState([]);
+  const [countryCount, setCountryCount] = useState({});
+  const [countryNumbers, setCountryNumbers] = useState([]);
+  const [deviceId, setDeviceId] = useState(null);
+
   useEffect(() => {
     if (
       storeData !== null &&
@@ -53,11 +57,22 @@ const App = () => {
       windowWidth !== null &&
       countryNumbers !== null &&
       countryCount !== null &&
-      channelItem !== null
+      channelItem !== null &&
+      deviceId !== null
     ) {
       setIsAppLoading(false);
     }
-  }, [storeData, youtubeVideoData, searchData,windowWidth,countryCount,countryNumbers,channelItem ]);
+  }, [
+    storeData,
+    youtubeVideoData,
+    searchData,
+    windowWidth,
+    countryCount,
+    countryNumbers,
+    channelItem,
+    deviceId,
+  ]);
+
   return isAppLoading ? (
     <BASE_URL_Context.Provider value={{BASE_URL}}>
       <DataContext.Provider
@@ -70,7 +85,8 @@ const App = () => {
           setWindowWidth,
           setCountryCount,
           setCountryNumbers,
-          setChannelItem
+          setChannelItem,
+          setDeviceId,
         }}>
         <SafeAreaView style={backgroundStyle}>
           <StatusBar
@@ -84,14 +100,23 @@ const App = () => {
   ) : (
     <BASE_URL_Context.Provider value={BASE_URL}>
       <StyleContext.Provider value={windowWidth}>
-      <DataContext.Provider value={{storeData, youtubeVideoData, searchData,countryNumbers,countryCount,channelItem}}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="App"
-            screenOptions={{
-              tabBarShowLabel: false,
-              tabBarActiveTintColor: '#FF8A00',
-              
+        <DataContext.Provider
+          value={{
+            storeData,
+            youtubeVideoData,
+            searchData,
+            countryNumbers,
+            countryCount,
+            channelItem,
+            deviceId,
+          }}>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="App"
+              screenOptions={{
+                tabBarShowLabel: false,
+                tabBarActiveTintColor: '#FF8A00',
+
                 headerStyle: {
                   backgroundColor: '#FF8A00',
                 },
@@ -99,105 +124,122 @@ const App = () => {
                 headerTitleStyle: {
                   fontWeight: 'bold',
                 },
-              
-            }}>
-            <Stack.Screen
-              name="BONDE"
-              component={HomeScreen}
-              options={({navigation})=>({
-                title:"",
-                headerLeft:()=><View>
-                  <Text>logoImage</Text>
-                </View>,
-                headerRight:()=><TouchableOpacity style={{backgroundColor:"green"}}
-                onPress={()=>{navigation.navigate("Login")}}>
-                  <Text>login</Text>
-                </TouchableOpacity>
+              }}>
+              <Stack.Screen
+                name="BONDE"
+                component={HomeScreen}
+                options={({navigation}) => ({
+                  title: '',
+                  headerLeft: () => (
+                    <View>
+                      <Text>logoImage</Text>
+                    </View>
+                  ),
+                  headerRight: () => (
+                    <TouchableOpacity
+                      style={{backgroundColor: 'green'}}
+                      onPress={() => {
+                        navigation.navigate('Login');
+                      }}>
+                      <Text>login</Text>
+                    </TouchableOpacity>
+                  ),
+                })}
+              />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="EmailLogin"
+                component={EmailLoginScreen}
+                options={{headerShown: true, title: ''}}
+              />
+              <Stack.Screen
+                name="Register"
+                component={RegisterScreen}
+                options={({navigation}) => ({
+                  headerShown: true,
+                  title: '',
+                  headerStyle: {
+                    backgroundColor: '#FF8A00',
+                  },
+                  headerTintColor: '#000000',
+                })}
+              />
+              <Stack.Screen
+                name="Channel"
+                component={ChannelSearchScreen}
+                options={{headerShown: true}}
+              />
+              <Stack.Screen
+                name="Food"
+                component={FoodSearchScreen}
+                options={{headerShown: true}}
+              />
+              <Stack.Screen
+                name="Local"
+                component={LocalSearchScreen}
+                options={{headerShown: true}}
+              />
+              <Stack.Screen
+                name="Mypage"
+                component={MypageScreen}
+                options={{headerShown: true}}
+              />
+
+              {localData.map(country => {
+                return (
+                  <Stack.Screen
+                    key={`country-${country[0]}`}
+                    name={`${country[3]} ${country[1]}`}
+                    component={StoreListScreen}
+                    options={{headerShown: true}}
+                  />
+                );
               })}
-            />
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="Register"
-              component={RegisterScreen}
-              options={({navigation})=>({headerShown: true,
-                title:"",
-                headerStyle: {
-                  backgroundColor: '#FF8A00',
-                },
-                headerTintColor: '#000000',
+
+              {Object.entries(foodSectors).map(food => {
+                return (
+                  <Stack.Screen
+                    key={`food-${food[0]}`}
+                    name={`${food[1][0]}`}
+                    component={StoreListScreen}
+                    options={{headerShown: true}}
+                  />
+                );
               })}
-            />
-            <Stack.Screen
-              name="Channel"
-              component={ChannelSearchScreen}
-              options={{headerShown: true}}
-            />
-            <Stack.Screen
-              name="Food"
-              component={FoodSearchScreen}
-              options={{headerShown: true}}
-            />
-            <Stack.Screen
-              name="Local"
-              component={LocalSearchScreen}
-              options={{headerShown: true}}
-            />
-            <Stack.Screen
-              name="Mypage"
-              component={MypageScreen}
-              options={{headerShown: true}}
-            />
-            
-            {localData.map((country)=>{
-              return(<Stack.Screen
-                key={`country-${country[0]}`}
-                name={`${country[3]} ${country[1]}`}
-                component={StoreListScreen}
-                options={{headerShown: true}}
-              />)
-            })}
 
-            {Object.entries(foodSectors).map((food)=>{
-              return(<Stack.Screen
-                key={`food-${food[0]}`}
-                name={`${food[1][0]}`}
-                component={StoreListScreen}
-                options={{headerShown: true}}
-              />)
-            })}
+              {channelItem.map(channel => {
+                return (
+                  <Stack.Screen
+                    key={`channel-${channel[0]}`}
+                    name={channel[1][0]}
+                    component={StoreListScreen}
+                    options={{headerShown: true}}
+                  />
+                );
+              })}
 
-            {channelItem.map((channel)=>{
-              return(<Stack.Screen
-                key={`channel-${channel[0]}`}
-                name={channel[1][0]}
-                component={StoreListScreen}
-                options={{headerShown: true}}
-              />)
-            })}
-
-            {searchData.map((store)=>{
-              return(<Stack.Screen
-                key={store.name}
-                name={store.name}
-                component={StoreItemScreen}
-                options={{headerShown: true}}
-              />)
-            })}
-
-            
-
-          </Stack.Navigator>
-        </NavigationContainer>
-        {/* <HomeScreen /> */}
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-      </DataContext.Provider>
+              {searchData.map(store => {
+                return (
+                  <Stack.Screen
+                    key={store.name}
+                    name={store.name}
+                    component={StoreItemScreen}
+                    options={{headerShown: true}}
+                  />
+                );
+              })}
+            </Stack.Navigator>
+          </NavigationContainer>
+          {/* <HomeScreen /> */}
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          />
+        </DataContext.Provider>
       </StyleContext.Provider>
     </BASE_URL_Context.Provider>
   );

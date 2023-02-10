@@ -16,7 +16,7 @@ import RegisterSubTitle from '../../Components/Register/RegisterSubTitle';
 import TermsCheckBox from '../../Components/Register/TermsCheckBox';
 import {StyleContext} from '../../ContextAPI/StyleContext';
 import IconImage from '../../Datas/Icons';
-const RegisterScreen = () => {
+const RegisterScreen = ({navigation}) => {
   const pageEditing = 0;
   const windowWidth = useContext(StyleContext);
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -357,6 +357,7 @@ const RegisterScreen = () => {
       </Animated.View>
       {/* Button */}
       <RegisterBtn
+        navigation={navigation}
         setPage={setPage}
         page={page}
         setButtonDisabled={setButtonDisabled}

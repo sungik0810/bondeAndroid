@@ -9,7 +9,7 @@ const LoginScreen = ({navigation}) => {
         <Text>Login</Text>
       </View>
       <View style={{flex: 0.5, width: '100%', alignItems: 'center'}}>
-        <SocialLoginBtn />
+        <SocialLoginBtn navigation={navigation} />
       </View>
       <TouchableOpacity
         style={{flex: 0.1, flexDirection: 'row'}}
