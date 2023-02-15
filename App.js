@@ -29,6 +29,7 @@ import RegisterScreen from './Screens/Register/RegisterScreen';
 import {getUniqueId} from 'react-native-device-info';
 import EmailLoginScreen from './Screens/EmailLoginScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const App = () => {
   const BASE_URL = API_URL;
   // navigation

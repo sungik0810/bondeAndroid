@@ -5,6 +5,9 @@ import {
   TouchableOpacity,
   Linking,
   Dimensions,
+  TextInput,
+  Pressable,
+  Image,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import IconStyle from '../Components/IconStyle';
@@ -14,14 +17,22 @@ import {StyleContext} from '../ContextAPI/StyleContext';
 import {DataContext} from '../ContextAPI/DataContext';
 import LoginBtn from '../Components/LoginBtn';
 import SocialLoginBtn from '../Components/SocialLoginBtn';
+import Review from '../Components/Review';
+import StoreInfo from '../Components/StoreInfo';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import axios from 'axios';
+import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
 const StoreItemScreen = ({route, navigation}) => {
   const {storeData, youtubeVideoData, searchData, userToken} =
     useContext(DataContext);
+  const BASE_URL = useContext(BASE_URL_Context);
   // console.log(storeData)
   const windowWidth = useContext(StyleContext);
   const [tapSelector, setTapSelector] = useState(0);
   const [storeInfo, setStoreInfo] = useState({});
   const [youtubeLinks, setYoutubeLinks] = useState([]);
+  const [newReviewPost, setNewReviewPost] = useState(false);
+  const [reviewText, setReviewText] = useState('');
   useEffect(() => {
     const storeDataFilter = storeData.filter(store => {
       return store.name === route.name;
@@ -33,8 +44,55 @@ const StoreItemScreen = ({route, navigation}) => {
     setStoreInfo(storeInfo[0]);
   }, []);
 
-  const screenHeight = Dimensions.get('screen').height;
-  console.log(screenHeight);
+  const [imageUri, setImageUri] = useState(null);
+  const [imageInfo, setImageInfo] = useState(null);
+  const [reviewAlert, setReviewAlert] = useState(false);
+  const [isReviewAxiosLoading, setIsReviewAxiosLoading] = useState(false);
+  const handleImagePicker = async () => {
+    const result = await launchImageLibrary({}, result => {
+      setImageInfo(result.assets[0]);
+      setImageUri(result.assets[0].uri);
+    });
+  };
+  const sendReview = async () => {
+    // console.log(reviewText);
+    // console.log(isReviewAxiosLoading);
+    const reviewData = reviewText;
+
+    if (reviewData.length < 10) {
+      setReviewAlert(true);
+      return console.log('too short');
+    }
+    setReviewAlert(false);
+    if (isReviewAxiosLoading) {
+      return console.log('wait!');
+    }
+
+    if (!isReviewAxiosLoading) {
+      setIsReviewAxiosLoading(true);
+      if (imageInfo == null) {
+        const result = await axios.post(`${BASE_URL}/api/review`, {
+          reviewData: reviewData,
+          imageData: null,
+        });
+        console.log(result.data);
+        setIsReviewAxiosLoading(false);
+      } else if (imageInfo !== null) {
+        const imageData = {
+          uri: imageInfo.uri,
+          type: imageInfo.type,
+          name: imageInfo.fileName,
+          size: imageInfo.fileSize,
+        };
+        const result = await axios.post(`${BASE_URL}/api/review`, {
+          reviewData: reviewData,
+          imageData: imageData,
+        });
+        console.log(result.data);
+        setIsReviewAxiosLoading(false);
+      }
+    }
+  };
   return (
     <View style={{flex: 1, position: 'relative'}}>
       {/* photo */}
@@ -49,332 +107,139 @@ const StoreItemScreen = ({route, navigation}) => {
           }}></View>
       </View>
 
-      {/* login Checking
-
-            <View style={{width:"70%",height:"100%",marginLeft:16,marginRight:16,position:"absolute",backgroundColor:"red",}}>
-                <View style={{width:"100%",height:"100%",backgroundColor:"red"}}></View>
-            </View> */}
-
-      {/* info selector */}
-      <View style={{flex: 0.7}}>
-        <View style={{flexDirection: 'row', marginLeft: 16, marginRight: 16}}>
-          <TouchableOpacity
+      <StoreInfo
+        windowWidth={windowWidth}
+        tapSelector={tapSelector}
+        setTapSelector={setTapSelector}
+        storeInfo={storeInfo}
+        setStoreInfo={setStoreInfo}
+        youtubeLinks={youtubeLinks}
+        setNewReviewPost={setNewReviewPost}
+      />
+      {newReviewPost ? (
+        <TouchableOpacity
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onPress={() => {
+            setNewReviewPost(false);
+          }}>
+          <Pressable
             style={{
-              width: '50%',
-              height: 40,
               alignItems: 'center',
-              justifyContent: 'center',
-              borderTopLeftRadius: 8,
-              backgroundColor: tapSelector === 0 ? 'orange' : 'white',
+              alignSelf: 'center',
+              width: '80%',
+              height: '80%',
+              backgroundColor: 'white',
+              borderRadius: 8,
+              justifyContent: 'space-around',
             }}
             onPress={() => {
-              setTapSelector(0);
+              console.log('no');
             }}>
-            <Text>정보</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              width: '50%',
-              height: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderTopRightRadius: 8,
-              backgroundColor: tapSelector === 1 ? 'orange' : 'white',
-              transion: 100,
-            }}
-            onPress={() => {
-              setTapSelector(1);
-            }}>
-            <Text>리뷰</Text>
-          </TouchableOpacity>
-        </View>
-        {tapSelector === 0 ? (
-          <ScrollView style={{marginLeft: 16, marginRight: 16}}>
-            {/* 가게 이름 */}
             <View
               style={{
+                width: '95%',
+                height: '50%',
+                // marginTop: 30,
                 backgroundColor: 'white',
-                borderBottomColor: '#D9D9D9',
-                borderBottomWidth: 1,
               }}>
-              <FontStyle
-                text={storeInfo.name}
-                fontWeight="900"
-                size="big"
-                marginLeft={16}
-                marginTop={16}
-                marginBottom={16}
+              <TextInput
+                style={{width: '100%', height: '100%', borderWidth: 1}}
+                placeholder="리뷰를 작성해주세요"
+                value={reviewText}
+                onChangeText={e => {
+                  setReviewText(e);
+                }}
+                multiline={true}
               />
             </View>
-            {/* 주소 */}
+            {/* photo */}
             <View
               style={{
-                backgroundColor: 'white',
-                borderBottomColor: '#D9D9D9',
-                borderBottomWidth: 1,
-                flexDirection: 'row',
+                width: '95%',
+                height: '30%',
+                // backgroundColor: 'black',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'space-around',
               }}>
-              <View style={{width: windowWidth - 88}}>
-                <FontStyle
-                  text={storeInfo.address}
-                  fontWeight="400"
-                  size="medium"
-                  marginLeft={16}
-                  marginTop={8}
-                  marginBottom={8}
-                  numberOfLines={4}
-                />
-              </View>
-              <IconStyle
-                src={<IconImage name="mini" />}
-                size="mini"
-                borderRadius={0}
-                marginLeft={0}
-                marginRight={16}
-              />
-            </View>
-            {/* 가게 정보 */}
-            <View
-              style={{
-                backgroundColor: 'white',
-                borderBottomColor: '#D9D9D9',
-                borderBottomWidth: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <View style={{width: windowWidth - 88}}>
-                <FontStyle
-                  text={`운영 시간 : ${storeInfo.openTime}`}
-                  fontWeight="400"
-                  size="medium"
-                  marginLeft={16}
-                  marginTop={8}
-                  marginBottom={4}
-                  numberOfLines={10}
-                />
-                <FontStyle
-                  text={`브레이크 타임 : ${storeInfo.breakTime}`}
-                  fontWeight="400"
-                  size="medium"
-                  marginLeft={16}
-                  marginTop={4}
-                  marginBottom={4}
-                  numberOfLines={10}
-                />
-                <FontStyle
-                  text={`라스트 오더 : ${storeInfo.lastOrderTime}`}
-                  fontWeight="400"
-                  size="medium"
-                  marginLeft={16}
-                  marginTop={4}
-                  marginBottom={4}
-                  numberOfLines={10}
-                />
-                <FontStyle
-                  text={`휴무일 : ${storeInfo.closed}`}
-                  fontWeight="400"
-                  size="medium"
-                  marginLeft={16}
-                  marginTop={4}
-                  marginBottom={8}
-                  numberOfLines={10}
-                />
-              </View>
-            </View>
-            {/* 전화 번호 */}
-            <View
-              style={{
-                backgroundColor: 'white',
-                borderBottomColor: '#D9D9D9',
-                borderBottomWidth: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 8,
-              }}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <IconStyle
-                  src={<IconImage name="mini" />}
-                  size="mini"
-                  borderRadius={0}
-                  marginLeft={0}
-                  marginRight={0}
-                />
-                <FontStyle
-                  text={`${storeInfo.contact}`}
-                  fontWeight="400"
-                  size="medium"
-                  marginLeft={8}
-                  marginTop={8}
-                  marginBottom={4}
-                  numberOfLines={10}
-                />
-              </View>
-            </View>
-            {/* 유튜브 */}
-            {youtubeLinks.map(youtube => {
-              return (
-                <TouchableOpacity
-                  key={youtube.dataNumber}
-                  onPress={() => {
-                    Linking.openURL(youtube.link);
-                  }}>
-                  <View
-                    style={{
-                      width: '100%',
-                      aspectRatio: 16 / 9,
-                      backgroundColor: 'green',
-                      borderTopLeftRadius: 8,
-                      borderTopRightRadius: 8,
-                      overflow: 'hidden',
-                    }}>
-                    <IconImage
-                      name="youtubeThumbnail"
-                      uri={youtube.thumbnail}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      width: '100%',
-                      backgroundColor: 'white',
-                      marginBottom: 16,
-                      borderBottomLeftRadius: 8,
-                      borderBottomRightRadius: 8,
-                    }}>
-                    <View style={{width: '80%'}}>
-                      <FontStyle
-                        text={youtube.title}
-                        fontWeight="400"
-                        size="medium"
-                        marginLeft={8}
-                        marginTop={8}
-                        marginBottom={4}
-                        numberOfLines={2}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <FontStyle
-                        text={youtube.onAir}
-                        fontWeight="400"
-                        size="small"
-                        marginLeft={8}
-                        marginTop={8}
-                        marginBottom={8}
-                        numberOfLines={2}
-                      />
-                      <IconStyle
-                        src={
-                          <IconImage
-                            name="channel"
-                            uri={`channel${youtube.channelName}.jpg`}
-                          />
-                        }
-                        size="mini"
-                        marginLeft={0}
-                        marginRight={8}
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        ) : (
-          tapSelector === 1 && (
-            <View>
               <View
                 style={{
-                  marginLeft: 16,
-                  marginRight: 16,
+                  // width: '50%',
+                  height: '60%',
+                  aspectRatio: 1,
                   backgroundColor: 'white',
+                  borderRadius: 8,
+                  borderWidth: 1,
                 }}>
-                <TouchableOpacity
+                {/* image preview */}
+                {imageUri == null ? null : (
+                  <Image
+                    style={{
+                      height: '100%',
+                      width: '100%',
+                      resizeMode: 'contain',
+                    }}
+                    source={{uri: imageUri}}
+                  />
+                )}
+              </View>
+              <TouchableOpacity
+                style={{
+                  width: '50%',
+                  height: '30%',
+
+                  justifyContent: 'center',
+                }}
+                onPress={() => {
+                  handleImagePicker();
+                }}>
+                {/* image select */}
+
+                <View
                   style={{
-                    marginLeft: 16,
-                    marginRight: 16,
-                    backgroundColor: 'blue',
+                    width: '100%',
+                    height: '50%',
+                    backgroundColor: 'lightgray',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                     height: 30,
                     borderRadius: 8,
-                    marginTop: 4,
-                    marginBottom: 4,
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
                   }}>
                   <FontStyle
-                    text={'글쓰기'}
-                    numberOfLines={10}
+                    text="사진 첨부하기"
                     size="small"
-                    marginLeft={8}
-                    marginTop={8}
                     color="white"
                     fontWeight="900"
                   />
-                </TouchableOpacity>
-              </View>
-              <ScrollView
-                style={{marginLeft: 16, marginRight: 16, height: '55%'}}>
-                {/* review */}
-                <View>
-                  <View
-                    style={{
-                      width: '100%',
-                      backgroundColor: 'white',
-                      flexDirection: 'row',
-                      marginBottom: 1,
-                      justifyContent: 'space-between',
-                    }}>
-                    <View style={{width: windowWidth - 128}}>
-                      <FontStyle
-                        text={
-                          'fffffdssssssdssddfsdfsfsdfsdfsdfsdfsdfsdfgsdghsdgdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdgdshdhsdsdsfsdfsddfsdfsdgsgdsfgsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsfsdffdssfsdfsdfsdfsdfsdfsdfsdff'
-                        }
-                        numberOfLines={10}
-                        size="small"
-                        marginLeft={8}
-                        marginTop={8}
-                      />
-                    </View>
-                    <IconStyle
-                      src={<IconImage name="mini" />}
-                      size="medium"
-                      marginLeft={16}
-                      marginRight={16}
-                      marginTop={4}
-                      marginBottom={4}
-                      borderRadius={8}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: 'white',
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#D9D9D9',
-                      marginBottom: 4,
-                    }}>
-                    <FontStyle
-                      text={'유저 정보'}
-                      numberOfLines={1}
-                      size="small"
-                      fontWeight="400"
-                      marginLeft={8}
-                      marginTop={4}
-                      marginBottom={4}
-                    />
-                  </View>
                 </View>
-              </ScrollView>
+              </TouchableOpacity>
             </View>
-          )
-        )}
-      </View>
-
+            <TouchableOpacity
+              style={{
+                width: '95%',
+                height: 40,
+                backgroundColor: reviewAlert ? 'red' : '#FF8A00',
+                borderRadius: 8,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={sendReview}>
+              <FontStyle
+                text={reviewAlert ? '리뷰가 너무 짧습니다' : '리뷰 남기기'}
+                color="white"
+                size="medium"
+                fontWeight="900"
+              />
+            </TouchableOpacity>
+          </Pressable>
+        </TouchableOpacity>
+      ) : null}
       {/* login Checking */}
       {userToken === null ? (
         <View

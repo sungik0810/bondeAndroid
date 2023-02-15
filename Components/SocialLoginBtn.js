@@ -11,7 +11,7 @@ const SocialLoginBtn = ({navigation}) => {
         color="#FFFFFF"
         navigation={navigation}
       />
-      <LoginBtn
+      {/* <LoginBtn
         type="Kakao"
         text="Kakao로 계속하기"
         backgroundColor="#FEE500"
@@ -33,7 +33,7 @@ const SocialLoginBtn = ({navigation}) => {
           color="#FFFFFF"
           navigation={navigation}
         />
-      )}
+      )} */}
     </View>
   );
 };
