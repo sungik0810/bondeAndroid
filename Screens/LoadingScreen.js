@@ -7,6 +7,8 @@ import {DataContext} from '../ContextAPI/DataContext';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
 import {locals} from '../Datas/locals';
 import {getUniqueId} from 'react-native-device-info';
+import jwt_decode from 'jwt-decode';
+import RNRestart from 'react-native-restart';
 const LoadingScreen = () => {
   const {
     setStoreData,
@@ -18,6 +20,8 @@ const LoadingScreen = () => {
     setCountryNumbers,
     setChannelItem,
     setDeviceId,
+    setLogined,
+    setUserToken,
   } = useContext(DataContext);
   const {BASE_URL} = useContext(BASE_URL_Context);
   // network connet checking && version checking && loading
@@ -192,20 +196,20 @@ const LoadingScreen = () => {
           const newServerVersion = newServerVersionAxios.data;
           if (currentVersion != null) {
             if (newServerVersion == currentVersion) {
-              console.log('새 버전과 현재 버전이 같을 때 실행합니다.');
+              // console.log('새 버전과 현재 버전이 같을 때 실행합니다.');
               localStorageData(currentVersion);
               return;
             } else if (newServerVersion !== currentVersion) {
-              console.log(
-                '서버에서 받아온 새 버전과 현재 버전이 다를때 실행됩니다.',
-              );
+              // console.log(
+              // '서버에서 받아온 새 버전과 현재 버전이 다를때 실행됩니다.',
+              // );
               serverData(newServerVersion);
               return;
             }
           } else if (currentVersion == null) {
-            console.log(
-              '최초 실행때라고 예측하는데 currentVersion이 null일때 실행됩니다.',
-            );
+            // console.log(
+            // '최초 실행때라고 예측하는데 currentVersion이 null일때 실행됩니다.',
+            // );
             serverData(newServerVersion);
             return;
           }
@@ -217,7 +221,7 @@ const LoadingScreen = () => {
       return;
     } else if (!netInfo.isConnected) {
       if (currentVersion != null) {
-        console.log('인터넷 연결 안돼있을때 실행됩니다.');
+        // console.log('인터넷 연결 안돼있을때 실행됩니다.');
         localStorageData(currentVersion);
         return;
       } else if (currentVersion == null) {
@@ -254,6 +258,50 @@ const LoadingScreen = () => {
       });
     });
     setLocalData(countryNumbers);
+  }, []);
+  useEffect(() => {
+    const userLogin = async () => {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (userToken === null) {
+        // console.log('userToken === null');
+        setLogined(false);
+        setUserToken(null);
+      } else if (userToken !== null) {
+        // console.log('userToken !== null');
+        const decodedToken = jwt_decode(userToken);
+        const email = decodedToken.data.email;
+        const userAccessToken = JSON.parse(userToken);
+        const check = await axios
+          .post(`${BASE_URL}/auth/jwtcheck`, {
+            email: email,
+            jwt: userAccessToken,
+          })
+          .then(async result => {
+            const signature = result.data.signature;
+
+            if (signature) {
+              const accessToken = result.data.sendAccessToken;
+              const JSONaccessToken = JSON.stringify(accessToken);
+              setLogined(true);
+              setUserToken(accessToken);
+              await AsyncStorage.setItem('userToken', JSONaccessToken);
+            } else {
+              await AsyncStorage.removeItem('userToken');
+              setLogined(false);
+              setUserToken(null);
+              RNRestart.Restart();
+            }
+          })
+          .catch(async err => {
+            await AsyncStorage.removeItem('userToken');
+            setLogined(false);
+            setUserToken(null);
+            RNRestart.Restart();
+          });
+      }
+    };
+
+    userLogin();
   }, []);
   return (
     <View>

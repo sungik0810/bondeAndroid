@@ -113,8 +113,8 @@ const RegisterScreen = ({navigation}) => {
     return {
       flex: 0.65,
       width: windowWidth * 4,
-      flexDirection: 'row',
       left: windowWidth * 1.5,
+      flexDirection: 'row',
       transform: [{translateX: transition.position.x}],
     };
   };
@@ -154,12 +154,7 @@ const RegisterScreen = ({navigation}) => {
       <Animated.View style={getStyle()}>
         {/* page0 */}
         <View
-          style={{
-            flex: 1,
-            width: windowWidth - 32,
-            marginLeft: 16,
-            marginRight: 16,
-          }}>
+          style={{width: windowWidth - 32, marginLeft: 16, marginRight: 16}}>
           <View
             style={{
               flexDirection: 'row',
@@ -253,7 +248,6 @@ const RegisterScreen = ({navigation}) => {
         {/* page1 */}
         <View
           style={{
-            flex: 1,
             width: windowWidth - 32,
             marginLeft: 16,
             marginRight: 16,
@@ -285,12 +279,7 @@ const RegisterScreen = ({navigation}) => {
         </View>
         {/* page2 */}
         <View
-          style={{
-            flex: 1,
-            width: windowWidth - 32,
-            marginLeft: 16,
-            marginRight: 16,
-          }}>
+          style={{width: windowWidth - 32, marginLeft: 16, marginRight: 16}}>
           <ScrollView style={{width: '100%'}}>
             <Animated.View
               style={[getInputStyle(), animationStyle()]}></Animated.View>
@@ -344,10 +333,10 @@ const RegisterScreen = ({navigation}) => {
         />
         {/* )} */}
         {/* page4 */}
-        {/* <View
+        <View
           style={{width: windowWidth - 32, marginLeft: 16, marginRight: 16}}>
           <Text>4</Text>
-        </View> */}
+        </View>
       </Animated.View>
       {/* Button */}
       <RegisterBtn

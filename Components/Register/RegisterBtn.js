@@ -34,7 +34,6 @@ const RegisterBtn = ({
 }) => {
   const BASE_URL = useContext(BASE_URL_Context);
   const {deviceId} = useContext(DataContext);
-  console.log(deviceId);
   useEffect(() => {
     if (page === 0 && agree1 === true && agree2 === true) {
       setButtonDisabled(false);
@@ -58,16 +57,6 @@ const RegisterBtn = ({
     }
   }, [phoneOuthNum]);
   useEffect(() => {
-    console.log(
-      emailAlert,
-      passwordAlert,
-      passwordCheckAlert,
-      nameAlert,
-      nickNameAlert,
-      birthAlert,
-      emailDuplicationAlert,
-      nickNameDuplicationAlert,
-    );
     if (
       page === 3 &&
       emailAlert == null &&

@@ -32,7 +32,13 @@ const RegisterInfoForm = ({
   setNickNameDuplicationAlert,
 }) => {
   return (
-    <View style={{width: windowWidth - 32, marginLeft: 16, marginRight: 16}}>
+    <View
+      style={{
+        flex: 1,
+        width: windowWidth - 32,
+        marginLeft: 16,
+        marginRight: 16,
+      }}>
       <ScrollView>
         {/* email */}
         <RegisterInput

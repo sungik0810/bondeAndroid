@@ -28,6 +28,7 @@ import LoginScreen from './Screens/LoginScreen';
 import RegisterScreen from './Screens/Register/RegisterScreen';
 import {getUniqueId} from 'react-native-device-info';
 import EmailLoginScreen from './Screens/EmailLoginScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const App = () => {
   const BASE_URL = API_URL;
   // navigation
@@ -48,6 +49,8 @@ const App = () => {
   const [countryCount, setCountryCount] = useState({});
   const [countryNumbers, setCountryNumbers] = useState([]);
   const [deviceId, setDeviceId] = useState(null);
+  const [logined, setLogined] = useState(null);
+  const [userToken, setUserToken] = useState(null);
 
   useEffect(() => {
     if (
@@ -61,6 +64,7 @@ const App = () => {
       deviceId !== null
     ) {
       setIsAppLoading(false);
+      console.log();
     }
   }, [
     storeData,
@@ -71,8 +75,16 @@ const App = () => {
     countryNumbers,
     channelItem,
     deviceId,
+    logined,
+    userToken,
   ]);
-
+  // const userLogin = async () => {
+  //   const a = await AsyncStorage.getItem('userToken');
+  //   const data = JSON.parse(a);
+  //   console.log(data);
+  //   console.log(data === null);
+  //   return data === null;
+  // };
   return isAppLoading ? (
     <BASE_URL_Context.Provider value={{BASE_URL}}>
       <DataContext.Provider
@@ -87,6 +99,8 @@ const App = () => {
           setCountryNumbers,
           setChannelItem,
           setDeviceId,
+          setLogined,
+          setUserToken,
         }}>
         <SafeAreaView style={backgroundStyle}>
           <StatusBar
@@ -109,6 +123,7 @@ const App = () => {
             countryCount,
             channelItem,
             deviceId,
+            userToken,
           }}>
           <NavigationContainer>
             <Stack.Navigator
@@ -125,32 +140,57 @@ const App = () => {
                   fontWeight: 'bold',
                 },
               }}>
-              <Stack.Screen
-                name="BONDE"
-                component={HomeScreen}
-                options={({navigation}) => ({
-                  title: '',
-                  headerLeft: () => (
-                    <View>
-                      <Text>logoImage</Text>
-                    </View>
-                  ),
-                  headerRight: () => (
-                    <TouchableOpacity
-                      style={{backgroundColor: 'green'}}
-                      onPress={() => {
-                        navigation.navigate('Login');
-                      }}>
-                      <Text>login</Text>
-                    </TouchableOpacity>
-                  ),
-                })}
-              />
+              {userToken === null ? (
+                <Stack.Screen
+                  name="BONDE"
+                  component={HomeScreen}
+                  options={({navigation}) => ({
+                    title: '',
+                    headerLeft: () => (
+                      <View>
+                        <Text>logoImage</Text>
+                      </View>
+                    ),
+                    headerRight: () => (
+                      <TouchableOpacity
+                        style={{backgroundColor: 'green'}}
+                        onPress={() => {
+                          navigation.navigate('Login');
+                        }}>
+                        <Text>login</Text>
+                      </TouchableOpacity>
+                    ),
+                  })}
+                />
+              ) : (
+                <Stack.Screen
+                  name="BONDE"
+                  component={HomeScreen}
+                  options={({navigation}) => ({
+                    title: '',
+                    headerLeft: () => (
+                      <View>
+                        <Text>logoImage</Text>
+                      </View>
+                    ),
+                    headerRight: () => (
+                      <TouchableOpacity
+                        style={{backgroundColor: 'green'}}
+                        onPress={() => {
+                          navigation.navigate('Mypage');
+                        }}>
+                        <Text>logined</Text>
+                      </TouchableOpacity>
+                    ),
+                  })}
+                />
+              )}
               <Stack.Screen
                 name="Login"
                 component={LoginScreen}
                 options={{headerShown: false}}
               />
+
               <Stack.Screen
                 name="EmailLogin"
                 component={EmailLoginScreen}

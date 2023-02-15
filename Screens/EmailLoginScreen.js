@@ -13,7 +13,9 @@ import FontStyle from '../Components/FontStyle';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
 import {StyleContext} from '../ContextAPI/StyleContext';
 import {SIGN_IN} from '@env';
-const EmailLoginScreen = () => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNRestart from 'react-native-restart';
+const EmailLoginScreen = ({navigation}) => {
   const BASE_URL = useContext(BASE_URL_Context);
   const windowWidth = useContext(StyleContext);
   const [userData, setUserData] = useState({
@@ -102,6 +104,16 @@ const EmailLoginScreen = () => {
       // borderBottomColor: '#FF8A00',
       position: 'absolute',
     };
+  };
+  const successSignIn = async token => {
+    console.log('?');
+    setSignInWrongAlert(false);
+    const jsonToken = JSON.stringify(token);
+    await AsyncStorage.setItem('userToken', jsonToken);
+    // const jsonData = await AsyncStorage.getItem('userToken');
+    // const data = JSON.parse(jsonData);
+    // console.log(data);
+    RNRestart.Restart();
   };
   return (
     <ScrollView
@@ -199,15 +211,12 @@ const EmailLoginScreen = () => {
           userData.email.includes('.') &&
           userData.password.length > 9
             ? async () => {
-                console.log('click');
                 setWrongAlert(false);
                 const signIn = await axios
                   .post(`${BASE_URL}${SIGN_IN}`, {userData: userData})
                   .then(result => {
-                    console.log(result.data);
                     result.data.state
-                      ? (console.log("login navigation.navigate('app')"),
-                        setSignInWrongAlert(false))
+                      ? successSignIn(result.data.token)
                       : result.data.num === 0
                       ? (setSignInWrongAlert(true),
                         setSignInWrongMessage('가입되어 있는 계정이 아닙니다.'))
@@ -216,7 +225,10 @@ const EmailLoginScreen = () => {
                         setSignInWrongMessage('패스워드가 일치하지 않습니다.'))
                       : null;
                   })
-                  .catch(err => {});
+                  .catch(err => {
+                    console.log(err);
+                  });
+                signIn;
               }
             : () => {
                 setWrongAlert(true);
