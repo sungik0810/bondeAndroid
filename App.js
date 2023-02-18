@@ -65,7 +65,6 @@ const App = () => {
       deviceId !== null
     ) {
       setIsAppLoading(false);
-      console.log();
     }
   }, [
     storeData,

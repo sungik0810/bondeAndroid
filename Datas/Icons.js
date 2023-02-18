@@ -3,6 +3,7 @@ import {
   CLOUD_FRONT_URL,
   CLOUD_FRONT_URL_LOGO,
   CLOUD_FRONT_URL_THUMBNAIL,
+  CLOUD_FRONT_URL_REVIEWPHOTO,
 } from '@env';
 import FastImage from 'react-native-fast-image';
 import {WithLocalSvg} from 'react-native-svg';
@@ -52,6 +53,16 @@ const IconImage = ({name, uri = String}) => {
       style={{backgroundColor: 'black', height: '100%', width: '100%'}}
       source={{
         uri: `${CLOUD_FRONT_URL_THUMBNAIL}${uri}`,
+        priority: FastImage.priority.normal,
+        cache: FastImage.cacheControl.immutable,
+      }}
+      resizeMode={FastImage.resizeMode.contain}
+    />
+  ) : name === 'reviewPhoto' ? (
+    <FastImage
+      style={{backgroundColor: 'black', height: '100%', width: '100%'}}
+      source={{
+        uri: `${CLOUD_FRONT_URL_REVIEWPHOTO}${uri}`,
         priority: FastImage.priority.normal,
         cache: FastImage.cacheControl.immutable,
       }}

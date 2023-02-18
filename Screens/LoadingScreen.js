@@ -285,6 +285,9 @@ const LoadingScreen = () => {
               setLogined(true);
               setUserToken(accessToken);
               await AsyncStorage.setItem('userToken', JSONaccessToken);
+              if (result.data.message === 'newAccessToken') {
+                RNRestart.Restart();
+              }
             } else {
               await AsyncStorage.removeItem('userToken');
               setLogined(false);

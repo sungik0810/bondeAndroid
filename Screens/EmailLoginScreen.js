@@ -106,7 +106,6 @@ const EmailLoginScreen = ({navigation}) => {
     };
   };
   const successSignIn = async token => {
-    console.log('?');
     setSignInWrongAlert(false);
     const jsonToken = JSON.stringify(token);
     await AsyncStorage.setItem('userToken', jsonToken);

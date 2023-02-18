@@ -14,11 +14,17 @@ const StoreInfo = ({
 }) => {
   return (
     <View style={{flex: 0.7}}>
-      <View style={{flexDirection: 'row', marginLeft: 16, marginRight: 16}}>
+      <View
+        style={{
+          flex: 0.1,
+          flexDirection: 'row',
+          marginLeft: 16,
+          marginRight: 16,
+        }}>
         <TouchableOpacity
           style={{
             width: '50%',
-            height: 40,
+            // height: 40,
             alignItems: 'center',
             justifyContent: 'center',
             borderTopLeftRadius: 8,
@@ -32,7 +38,7 @@ const StoreInfo = ({
         <TouchableOpacity
           style={{
             width: '50%',
-            height: 40,
+            // height: 40,
             alignItems: 'center',
             justifyContent: 'center',
             borderTopRightRadius: 8,
@@ -46,7 +52,13 @@ const StoreInfo = ({
         </TouchableOpacity>
       </View>
       {tapSelector === 0 ? (
-        <ScrollView style={{marginLeft: 16, marginRight: 16}}>
+        <ScrollView
+          style={{
+            flex: 0.9,
+            marginLeft: 16,
+            marginRight: 16,
+            // backgroundColor: 'gray',
+          }}>
           {/* 가게 이름 */}
           <View
             style={{
@@ -241,7 +253,12 @@ const StoreInfo = ({
           })}
         </ScrollView>
       ) : (
-        tapSelector === 1 && <Review setNewReviewPost={setNewReviewPost} />
+        tapSelector === 1 && (
+          <Review
+            setNewReviewPost={setNewReviewPost}
+            dataNumber={storeInfo.dataNumber}
+          />
+        )
       )}
     </View>
   );

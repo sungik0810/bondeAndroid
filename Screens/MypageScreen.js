@@ -15,10 +15,8 @@ const MypageScreen = ({navigation}) => {
     try {
       await AsyncStorage.removeItem('userToken');
     } catch (e) {}
-    console.log('remove');
   };
   const decodedToken = jwt_decode(userToken);
-  console.log(decodedToken);
   return (
     <View
       style={{

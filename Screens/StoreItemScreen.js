@@ -1,38 +1,34 @@
 import {
-  Text,
   View,
-  ScrollView,
   TouchableOpacity,
-  Linking,
-  Dimensions,
   TextInput,
   Pressable,
   Image,
+  Animated,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
-import IconStyle from '../Components/IconStyle';
-import IconImage from '../Datas/Icons';
 import FontStyle from '../Components/FontStyle';
 import {StyleContext} from '../ContextAPI/StyleContext';
 import {DataContext} from '../ContextAPI/DataContext';
-import LoginBtn from '../Components/LoginBtn';
 import SocialLoginBtn from '../Components/SocialLoginBtn';
-import Review from '../Components/Review';
 import StoreInfo from '../Components/StoreInfo';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import axios from 'axios';
 import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
+import jwtDecode from 'jwt-decode';
+import uuid from 'react-native-uuid';
+import ProgressBar from '../Components/ProgressBar';
 const StoreItemScreen = ({route, navigation}) => {
-  const {storeData, youtubeVideoData, searchData, userToken} =
-    useContext(DataContext);
+  const {storeData, userToken} = useContext(DataContext);
   const BASE_URL = useContext(BASE_URL_Context);
-  // console.log(storeData)
   const windowWidth = useContext(StyleContext);
   const [tapSelector, setTapSelector] = useState(0);
   const [storeInfo, setStoreInfo] = useState({});
   const [youtubeLinks, setYoutubeLinks] = useState([]);
   const [newReviewPost, setNewReviewPost] = useState(false);
   const [reviewText, setReviewText] = useState('');
+  const [progressBarOn, setProgressBarOn] = useState(false);
+  const [loadingPercent, setLoadingPercent] = useState(0);
   useEffect(() => {
     const storeDataFilter = storeData.filter(store => {
       return store.name === route.name;
@@ -48,6 +44,7 @@ const StoreItemScreen = ({route, navigation}) => {
   const [imageInfo, setImageInfo] = useState(null);
   const [reviewAlert, setReviewAlert] = useState(false);
   const [isReviewAxiosLoading, setIsReviewAxiosLoading] = useState(false);
+  const [axiosErr, setAxiosErr] = useState(false);
   const handleImagePicker = async () => {
     const result = await launchImageLibrary({}, result => {
       setImageInfo(result.assets[0]);
@@ -55,44 +52,92 @@ const StoreItemScreen = ({route, navigation}) => {
     });
   };
   const sendReview = async () => {
-    // console.log(reviewText);
-    // console.log(isReviewAxiosLoading);
     const reviewData = reviewText;
 
     if (reviewData.length < 10) {
       setReviewAlert(true);
-      return console.log('too short');
+      return;
     }
     setReviewAlert(false);
     if (isReviewAxiosLoading) {
-      return console.log('wait!');
+      return;
     }
 
     if (!isReviewAxiosLoading) {
       setIsReviewAxiosLoading(true);
-      if (imageInfo == null) {
-        const result = await axios.post(`${BASE_URL}/api/review`, {
-          reviewData: reviewData,
-          imageData: null,
-        });
-        console.log(result.data);
-        setIsReviewAxiosLoading(false);
-      } else if (imageInfo !== null) {
-        const imageData = {
-          uri: imageInfo.uri,
+      const imageuuid = uuid.v4();
+      const userInfo = jwtDecode(userToken);
+      const formData = new FormData();
+      if (imageInfo === null) {
+        try {
+          const result = await axios.post(`${BASE_URL}/api/review/text`, {
+            datanumber: storeInfo.dataNumber,
+            useremail: userInfo.data.email,
+            username: userInfo.data.name,
+            usernickname: userInfo.data.nickName,
+            reviewdata: reviewData,
+            uuid: imageuuid,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        formData.append('reviewImage', {
+          fileSize: imageInfo.fileSize,
           type: imageInfo.type,
+          uri: imageInfo.uri,
           name: imageInfo.fileName,
-          size: imageInfo.fileSize,
-        };
-        const result = await axios.post(`${BASE_URL}/api/review`, {
-          reviewData: reviewData,
-          imageData: imageData,
         });
-        console.log(result.data);
-        setIsReviewAxiosLoading(false);
+        try {
+          const result = await axios.post(
+            `${BASE_URL}/api/review/photo`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                datanumber: storeInfo.dataNumber,
+                useremail: userInfo.data.email,
+                username: userInfo.data.name,
+                usernickname: userInfo.data.nickName,
+                reviewdata: reviewData,
+                uuid: imageuuid,
+              },
+              onUploadProgress: e => {
+                setLoadingPercent(Math.round((100 * e.loaded) / e.total));
+              },
+            },
+          );
+          setProgressBarOn(true);
+          setIsReviewAxiosLoading(false);
+          setNewReviewPost(false);
+          setAxiosErr(false);
+        } catch (err) {
+          console.log(err);
+          setAxiosErr(true);
+          setIsReviewAxiosLoading(false);
+        }
       }
     }
   };
+  const [fadeAnim] = useState(new Animated.Value(0));
+  useEffect(() => {
+    if (loadingPercent === 100) {
+      setProgressBarOn(false);
+      setLoadingPercent(0);
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 1000, // 1초
+        useNativeDriver: true, // 성능 최적화를 위해 네이티브 드라이버 사용
+      }).start();
+    }
+  }, [loadingPercent]);
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000, // 1초
+      useNativeDriver: true, // 성능 최적화를 위해 네이티브 드라이버 사용
+    }).start();
+  }, [progressBarOn]);
   return (
     <View style={{flex: 1, position: 'relative'}}>
       {/* photo */}
@@ -104,7 +149,15 @@ const StoreItemScreen = ({route, navigation}) => {
             marginLeft: 16,
             marginRight: 16,
             borderRadius: 8,
-          }}></View>
+            position: 'relative',
+          }}>
+          {progressBarOn ? (
+            <Animated.View
+              style={{position: 'absolute', width: '100%', opacity: fadeAnim}}>
+              <ProgressBar loadingPercent={loadingPercent} />
+            </Animated.View>
+          ) : null}
+        </View>
       </View>
 
       <StoreInfo
@@ -138,9 +191,6 @@ const StoreItemScreen = ({route, navigation}) => {
               backgroundColor: 'white',
               borderRadius: 8,
               justifyContent: 'space-around',
-            }}
-            onPress={() => {
-              console.log('no');
             }}>
             <View
               style={{
@@ -224,14 +274,24 @@ const StoreItemScreen = ({route, navigation}) => {
               style={{
                 width: '95%',
                 height: 40,
-                backgroundColor: reviewAlert ? 'red' : '#FF8A00',
+                backgroundColor: reviewAlert
+                  ? 'red'
+                  : axiosErr
+                  ? 'red'
+                  : '#FF8A00',
                 borderRadius: 8,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
               onPress={sendReview}>
               <FontStyle
-                text={reviewAlert ? '리뷰가 너무 짧습니다' : '리뷰 남기기'}
+                text={
+                  reviewAlert
+                    ? '리뷰가 너무 짧습니다'
+                    : axiosErr
+                    ? '다시 시도해주세요'
+                    : '리뷰 남기기'
+                }
                 color="white"
                 size="medium"
                 fontWeight="900"

@@ -64,9 +64,6 @@ const HomeScreen = ({navigation}) => {
               height: 156,
             }}
             onPress={async () => {
-              const a = await AsyncStorage.getItem('userTokens');
-              const data = JSON.parse(a);
-              console.log(data);
               navigation.navigate('Channel');
             }}>
             <FontStyle

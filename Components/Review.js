@@ -1,14 +1,32 @@
-import {useContext} from 'react';
+import axios from 'axios';
+import {useContext, useEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {BASE_URL_Context} from '../ContextAPI/BASE_URL_Context';
 import {StyleContext} from '../ContextAPI/StyleContext';
 import IconImage from '../Datas/Icons';
 import FontStyle from './FontStyle';
 import IconStyle from './IconStyle';
+import ReviewItem from './ReviewItem';
 
-const Review = ({setNewReviewPost}) => {
+const Review = ({setNewReviewPost, dataNumber}) => {
   const windowWidth = useContext(StyleContext);
+  const BASE_URL = useContext(BASE_URL_Context);
+  const [reviewItems, setReviewItems] = useState([]);
+  const getReview = async dataNumber => {
+    try {
+      const getItem = await axios.get(`${BASE_URL}/api/review`, {
+        params: {dataNumber: dataNumber},
+      });
+      setReviewItems(getItem.data.reviewItems);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getReview(dataNumber);
+  }, []);
   return (
-    <View>
+    <View style={{flex: 0.9}}>
       <View
         style={{
           marginLeft: 16,
@@ -42,54 +60,16 @@ const Review = ({setNewReviewPost}) => {
       </View>
       <ScrollView style={{marginLeft: 16, marginRight: 16, height: '55%'}}>
         {/* review */}
-        <View>
-          <View
-            style={{
-              width: '100%',
-              backgroundColor: 'white',
-              flexDirection: 'row',
-              marginBottom: 1,
-              justifyContent: 'space-between',
-            }}>
-            <View style={{width: windowWidth - 128}}>
-              <FontStyle
-                text={
-                  'fffffdssssssdssddfsdfsfsdfsdfsdfsdfsdfsdfgsdghsdgdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdgdshdhsdsdsfsdfsddfsdfsdgsgdsfgsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdsdsfsdffdssfsdfsdfsdfsdfsdfsdfsdff'
-                }
-                numberOfLines={10}
-                size="small"
-                marginLeft={8}
-                marginTop={8}
-              />
-            </View>
-            <IconStyle
-              src={<IconImage name="mini" />}
-              size="medium"
-              marginLeft={16}
-              marginRight={16}
-              marginTop={4}
-              marginBottom={4}
-              borderRadius={8}
+        {reviewItems.map(reviewItemInfo => {
+          return (
+            <ReviewItem
+              key={reviewItemInfo.reviewUuid}
+              windowWidth={windowWidth}
+              reviewItemInfo={reviewItemInfo}
             />
-          </View>
-          <View
-            style={{
-              backgroundColor: 'white',
-              borderBottomWidth: 1,
-              borderBottomColor: '#D9D9D9',
-              marginBottom: 4,
-            }}>
-            <FontStyle
-              text={'유저 정보'}
-              numberOfLines={1}
-              size="small"
-              fontWeight="400"
-              marginLeft={8}
-              marginTop={4}
-              marginBottom={4}
-            />
-          </View>
-        </View>
+          );
+        })}
+        {/* <ReviewItem windowWidth={windowWidth} /> */}
       </ScrollView>
     </View>
   );
